@@ -7,16 +7,16 @@ import 'screens/history.dart';
 import 'screens/settings.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const FocusGarden());
 }
 
-class MyApp extends StatelessWidget {
+class FocusGarden extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Focus Garden',
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.light,
