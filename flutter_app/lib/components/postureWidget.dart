@@ -1,32 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/providers/postureProvider.dart';
 import 'package:flutter_app/utils/constants.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PostureWidget extends StatefulWidget {
-  const PostureWidget({Key? key}) : super(key: key);
-
+class PostureWidget extends ConsumerWidget {
   @override
-  _PostureWidgetState createState() => _PostureWidgetState();
-}
-
-class _PostureWidgetState extends State<PostureWidget> {
-  String imagePath = goodPosture;
-
-  void toggleImage() {
-    setState(() {
-      imagePath = imagePath == goodPosture ? badPosture : goodPosture;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final posture = ref.watch(postureProvider);
     return GestureDetector(
-      onTap: toggleImage,
+      onTap: posture.toggleImage,
       child: Container(
         width: 150,
         height: 150,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(imagePath),
+            image: AssetImage(posture.isGoodPosture ? ImagePaths.goodPosture : ImagePaths.badPosture),
           ),
         ),
       ),

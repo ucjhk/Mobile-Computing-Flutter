@@ -1,20 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/components/gardenWidget.dart';
 import 'package:flutter_app/components/postureWidget.dart';
 import 'package:flutter_app/providers/stopWatchProvider.dart';
 import 'package:flutter_app/utils/constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tuple/tuple.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(backGroundImage),
+            image: AssetImage(ImagePaths.backGroundImage),
             fit: BoxFit.cover,
           ),
         ),
@@ -24,8 +25,11 @@ class HomePage extends StatelessWidget {
             width: kIsWeb ? 400.0 : double.infinity,
             child: const Stack(
               children: [
-                StopWatchWidget(),
-                
+                GardenWidget(
+                  widthArea: Tuple2(-100, 300),
+                  heightArea: Tuple2(370, 500)
+                  ),
+                StopWatchWidget()
               ]
             ),
           ),
@@ -50,7 +54,7 @@ class StopWatchWidget extends ConsumerWidget {
           style: const TextStyle(fontSize: 48.0),
         ),
         const SizedBox(height: 30.0),
-        const PostureWidget(),
+        PostureWidget(),
         const SizedBox(height: 40.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
