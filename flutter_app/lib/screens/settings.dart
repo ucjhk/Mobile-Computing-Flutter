@@ -1,5 +1,6 @@
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/components/customInteractables.dart';
+import 'package:flutter_app/utils/time.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -63,16 +64,7 @@ class _SettingsPage extends State<SettingsPage>{
         child: Column(children: [
           Row(
             children: <Widget>[
-              const Text('Learn session time'),
-              //TODO auslagern
-              TextFormField(
-                initialValue: _sessionTime.toString(),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
-                ],
-                onFieldSubmitted: (value) => _changeSessionTime(int.parse(value)),
-              )
+              NumberPicker(initialValue: 10, steps: 5)
             ],
           ),
         ]),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class BottomNavigation extends StatefulWidget {
+  final ValueChanged<int>? onTap;
+
+  BottomNavigation(this.onTap);
   @override
   _BottomNavigationState createState() => _BottomNavigationState();
 }
@@ -11,6 +14,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   void _onTabTapped(int index) {
     setState(() {
       _currentIndex = index;
+      widget.onTap?.call(_currentIndex);
     });
   }
 
@@ -25,12 +29,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: 'Search',
+          icon: Icon(Icons.history),
+          label: 'History',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
+          icon: Icon(Icons.settings),
+          label: 'Settings',
         ),
       ],
     );
