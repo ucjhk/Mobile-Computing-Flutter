@@ -15,13 +15,13 @@ class GardenWidget extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<GardenWidget> createState() => _GardenWidgetState();
-}
+} 
 
 class _GardenWidgetState extends ConsumerState<GardenWidget> {
   List<Widget> _gardenObjects = []; 
 
-  addObject(String imagePath, GardenObjectType type) {
-    String flowerImage = imagePath;
+  addObject(GardenObjectWidget object) {
+    print(object);
     int xLength = widget.widthArea.item2 - widget.widthArea.item1;
     int yLength = widget.heightArea.item2 - widget.heightArea.item1;
     int xPos = Random().nextInt(xLength) + widget.widthArea.item1;
@@ -30,7 +30,7 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
 
     int insertionIndex = 0;
     for (int i = 0; i < _gardenObjects.length; i++) {
-      if((_gardenObjects[i] as GardenObject).distance < distance) {
+      if((_gardenObjects[i] as GardenObjectWidget).distance < distance) {
         insertionIndex++;
       }
       else {
@@ -39,11 +39,9 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
     }
     setState(() {
       _gardenObjects.insert(insertionIndex,
-        GardenObject(
-          imagePath: flowerImage,
-          type: type,
+        object(
           distance: distance,
-          position: Tuple2(xPos.toDouble(),yPos.toDouble())
+          position: Tuple2(xPos.toDouble(), yPos.toDouble())
         )
       );
     }); 
@@ -54,7 +52,7 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
     final posture = ref.watch(postureProvider);
     if (stopwatch.seconds % 3 == 0 && stopwatch.seconds != 0 && stopwatch.isRunning) {
       //TODO Linus fragen wie am Besten mit Vererbung regeln
-      addObject(ImagePaths.flowerImages[Random().nextInt(ImagePaths.flowerImages.length)], GardenObjectType.flower);
+      addObject(FlowerWidget);
     }
     return Stack(
       children: _gardenObjects,

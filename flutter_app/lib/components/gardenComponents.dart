@@ -1,18 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:tuple/tuple.dart';
-enum GardenObjectType {
-  flower,
-  smallGarbage,
-  bigGarbage
-}
+import 'dart:math';
 
-class GardenObject extends StatelessWidget {
-  final GardenObjectType type;
+import 'package:flutter/material.dart';
+import 'package:flutter_app/utils/constants.dart';
+import 'package:tuple/tuple.dart';
+
+class GardenObjectWidget extends StatelessWidget {
   final String imagePath;
   final double distance;
   final Tuple2<double, double> position;
 
-  const GardenObject({super.key, required this.imagePath, required this.type, this.distance = 1, required this.position});
+  GardenObjectWidget({Key? key, required this.imagePath, this.distance = 1, required this.position});
+
   @override
   Widget build(BuildContext context) {
     print("${position.item1}, ${position.item2}");
@@ -27,4 +25,22 @@ class GardenObject extends StatelessWidget {
       )
     );
   }
+}
+
+class GarbageWidget extends GardenObjectWidget {
+  GarbageWidget({super.key, required double distance, required Tuple2<double, double> position})
+      : super(
+          distance: distance,
+          position: position,
+          imagePath: ImagePaths.garbageImages[Random().nextInt(ImagePaths.garbageImages.length)],
+        );
+}
+
+class FlowerWidget extends GardenObjectWidget {
+  FlowerWidget({super.key, required double distance, required Tuple2<double, double> position})
+      : super(
+          distance: distance,
+          position: position,
+          imagePath: ImagePaths.flowerImages[Random().nextInt(ImagePaths.flowerImages.length)],
+        );
 }
