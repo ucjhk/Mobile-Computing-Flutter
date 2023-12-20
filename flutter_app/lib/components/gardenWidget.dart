@@ -1,5 +1,3 @@
-
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -18,6 +16,16 @@ class GardenWidget extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<GardenWidget> createState() => _GardenWidgetState();
+}
+
+int getFirstGarbageInList(List<Widget> list){
+  for(int i = 0; i < list.length; i++){
+    if(list[i] is GarbageWidget || list[i] is BigGarbageWidget){
+      return i;
+    }
+  }
+  return -1;
+}
 }
 
 int getFirstGarbageInList(List<Widget> list){
@@ -92,6 +100,7 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
     int xPos = Random().nextInt(xLength) + widget.widthArea.item1;
     int yPos = Random().nextInt(yLength) + widget.heightArea.item1;
     double distance = ((yPos - widget.heightArea.item1) / yLength);
+    double distance = ((yPos - widget.heightArea.item1) / yLength);
 
     int insertionIndex = 0;
     for (int i = 0; i < _gardenObjects.length; i++) {
@@ -103,6 +112,12 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
       }
     }
     setState(() {
+      _gardenObjects.insert(insertionIndex, switch(T) {
+        BigGarbageWidget=>BigGarbageWidget(distance: distance,position: Tuple2(xPos.toDouble(), yPos.toDouble())),
+        GarbageWidget =>GarbageWidget(distance: distance,position: Tuple2(xPos.toDouble(), yPos.toDouble())),
+        FlowerWidget=>FlowerWidget(distance: distance, position: Tuple2(xPos.toDouble(), yPos.toDouble())),
+        _=>throw Exception("Invalid type")
+      });
       _gardenObjects.insert(insertionIndex, switch(T) {
         BigGarbageWidget=>BigGarbageWidget(distance: distance,position: Tuple2(xPos.toDouble(), yPos.toDouble())),
         GarbageWidget =>GarbageWidget(distance: distance,position: Tuple2(xPos.toDouble(), yPos.toDouble())),
