@@ -29,8 +29,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.history),
-          label: 'History',
+          icon: Icon(Icons.show_chart),
+          label: 'Statistics',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings),

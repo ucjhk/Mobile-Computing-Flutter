@@ -1,9 +1,12 @@
+
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/gardenComponents.dart';
 import 'package:flutter_app/providers/postureProvider.dart';
 import 'package:flutter_app/providers/stopWatchProvider.dart';
+import 'package:flutter_app/storingFiles.dart';
 import 'package:flutter_app/utils/constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuple/tuple.dart';
@@ -15,18 +18,80 @@ class GardenWidget extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<GardenWidget> createState() => _GardenWidgetState();
-} 
+}
+
+int getFirstGarbageInList(List<Widget> list){
+  for(int i = 0; i < list.length; i++){
+    if(list[i] is GarbageWidget || list[i] is BigGarbageWidget){
+      return i;
+    }
+  }
+  return -1;
+}
 
 class _GardenWidgetState extends ConsumerState<GardenWidget> {
-  List<Widget> _gardenObjects = []; 
+  List<GardenObjectWidget> _gardenObjects = [];
+  int _goodPostureTimer = 0;
+  int _badPostureTimer = 0;
 
-  addObject(GardenObjectWidget object) {
-    print(object);
+  @override
+  void initState() {
+    super.initState();
+    readFromFile().then((value) {
+      setState(() {
+        _gardenObjects = value;
+      });
+    });
+  }
+
+  timerChecking(){
+    if(_goodPostureTimer >= timeTillFlower){
+      int garbageIndex = getFirstGarbageInList(_gardenObjects);
+      if(garbageIndex != -1){
+        if(_goodPostureTimer >= (_gardenObjects[garbageIndex] is BigGarbageWidget ? timeTillBigGarbageDisposal : timeTillGarbageDisposal)){
+          _goodPostureTimer = 0;
+          _gardenObjects.removeAt(garbageIndex);
+        }
+      }
+      else{
+        _goodPostureTimer = 0;
+        addObject<FlowerWidget>();
+      }
+    }
+    if(_badPostureTimer >= timeTillWarning){
+      //TODO warningsignal and screenshaking maybe pulse red
+    }
+    if(_badPostureTimer >= timeTillBigGarbage){
+      _badPostureTimer = 0;
+      addObject<BigGarbageWidget>();
+    }
+  }
+  
+  changeTimers(){
+    final posture = ref.watch(postureProvider);
+    if(posture.isGoodPosture){
+      _goodPostureTimer++;
+
+      if(_badPostureTimer >= timeTillBigGarbage){
+        addObject<BigGarbageWidget>();
+      }
+      else if(_badPostureTimer >= timeTillGarbage){
+        addObject<GarbageWidget>();
+      }
+
+      _badPostureTimer = 0;
+    }
+    else{
+      _badPostureTimer++;
+    }
+  }
+
+  Future <File> addObject<T extends GardenObjectWidget>() {
     int xLength = widget.widthArea.item2 - widget.widthArea.item1;
     int yLength = widget.heightArea.item2 - widget.heightArea.item1;
     int xPos = Random().nextInt(xLength) + widget.widthArea.item1;
     int yPos = Random().nextInt(yLength) + widget.heightArea.item1;
-    double distance = ((yPos - widget.heightArea.item1) / yLength) + 0.25;
+    double distance = ((yPos - widget.heightArea.item1) / yLength);
 
     int insertionIndex = 0;
     for (int i = 0; i < _gardenObjects.length; i++) {
@@ -38,22 +103,27 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
       }
     }
     setState(() {
-      _gardenObjects.insert(insertionIndex,
-        object(
-          distance: distance,
-          position: Tuple2(xPos.toDouble(), yPos.toDouble())
-        )
-      );
+      _gardenObjects.insert(insertionIndex, switch(T) {
+        BigGarbageWidget=>BigGarbageWidget(distance: distance,position: Tuple2(xPos.toDouble(), yPos.toDouble())),
+        GarbageWidget =>GarbageWidget(distance: distance,position: Tuple2(xPos.toDouble(), yPos.toDouble())),
+        FlowerWidget=>FlowerWidget(distance: distance, position: Tuple2(xPos.toDouble(), yPos.toDouble())),
+        _=>throw Exception("Invalid type")
+      });
     }); 
+
+    return saveToFile(_gardenObjects);
   }
+
+
   @override
   Widget build(BuildContext context) {
     final stopwatch = ref.watch(stopWatchProvider);
-    final posture = ref.watch(postureProvider);
-    if (stopwatch.seconds % 3 == 0 && stopwatch.seconds != 0 && stopwatch.isRunning) {
-      //TODO Linus fragen wie am Besten mit Vererbung regeln
-      addObject(FlowerWidget);
+
+    if(stopwatch.isRunning){
+      changeTimers();
+      timerChecking();
     }
+    
     return Stack(
       children: _gardenObjects,
     );

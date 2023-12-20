@@ -14,6 +14,9 @@ class ImagePaths {
     GarbageImages.smallGarbage04,
     GarbageImages.smallGarbage05,
     GarbageImages.smallGarbage06,
+  ];
+
+  static const List<String> bigGarbageImages = [
     GarbageImages.bigGarbage01,
     GarbageImages.bigGarbage02,
   ];
@@ -60,3 +63,10 @@ class FlowerImages{
   static const String flowerRosa = '$_objectsPath/flower_rosa.png';
   static const String flowerTurkis = '$_objectsPath/flower_turkis.png';
 }
+
+const int timeTillGarbage = 10;
+const double timeTillGarbageDisposal = timeTillGarbage / 2;
+const int timeTillBigGarbage = 30;
+const double timeTillBigGarbageDisposal = timeTillBigGarbage / 2;
+const int timeTillFlower = 5;
+const double timeTillWarning = timeTillGarbage / 2.5; 
