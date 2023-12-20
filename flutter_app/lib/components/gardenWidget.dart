@@ -26,16 +26,6 @@ int getFirstGarbageInList(List<Widget> list){
   }
   return -1;
 }
-}
-
-int getFirstGarbageInList(List<Widget> list){
-  for(int i = 0; i < list.length; i++){
-    if(list[i] is GarbageWidget || list[i] is BigGarbageWidget){
-      return i;
-    }
-  }
-  return -1;
-}
 
 class _GardenWidgetState extends ConsumerState<GardenWidget> {
   List<GardenObjectWidget> _gardenObjects = [];
@@ -94,12 +84,11 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
     }
   }
 
-  Future <File> addObject<T extends GardenObjectWidget>() {
+  Future <void> addObject<T extends GardenObjectWidget>() {
     int xLength = widget.widthArea.item2 - widget.widthArea.item1;
     int yLength = widget.heightArea.item2 - widget.heightArea.item1;
     int xPos = Random().nextInt(xLength) + widget.widthArea.item1;
     int yPos = Random().nextInt(yLength) + widget.heightArea.item1;
-    double distance = ((yPos - widget.heightArea.item1) / yLength);
     double distance = ((yPos - widget.heightArea.item1) / yLength);
 
     int insertionIndex = 0;
@@ -112,12 +101,6 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
       }
     }
     setState(() {
-      _gardenObjects.insert(insertionIndex, switch(T) {
-        BigGarbageWidget=>BigGarbageWidget(distance: distance,position: Tuple2(xPos.toDouble(), yPos.toDouble())),
-        GarbageWidget =>GarbageWidget(distance: distance,position: Tuple2(xPos.toDouble(), yPos.toDouble())),
-        FlowerWidget=>FlowerWidget(distance: distance, position: Tuple2(xPos.toDouble(), yPos.toDouble())),
-        _=>throw Exception("Invalid type")
-      });
       _gardenObjects.insert(insertionIndex, switch(T) {
         BigGarbageWidget=>BigGarbageWidget(distance: distance,position: Tuple2(xPos.toDouble(), yPos.toDouble())),
         GarbageWidget =>GarbageWidget(distance: distance,position: Tuple2(xPos.toDouble(), yPos.toDouble())),
