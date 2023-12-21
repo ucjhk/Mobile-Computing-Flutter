@@ -18,13 +18,16 @@ class StopWatchWidget extends ConsumerWidget {
           '${(stopWatch.seconds ~/ 3600).toString().padLeft(2, '0')}:${((stopWatch.seconds % 3600) ~/ 60).toString().padLeft(2, '0')}:${(stopWatch.seconds % 60).toString().padLeft(2, '0')}',
           style: Theme.of(context).textTheme.displayLarge,
         ),
-        const SizedBox(height: 20.0),
-        stopWatch.isRunning ? PostureWidget() : const Column(
-          children: [
-            SizedBox(height: 20.0),
-            NumberPicker(name: "Session Time", initialValue: 40, steps: 1),
-            NumberPicker(name: "Pause Time", initialValue: 5, steps: 1),
-          ]
+        const SizedBox(height: 10.0),
+        SizedBox(
+          height: 150.0,
+          child: stopWatch.isRunning ? PostureWidget() : const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              NumberPicker(name: "Session Time", initialValue: 40, steps: 1),
+              NumberPicker(name: "Pause Time", initialValue: 5, steps: 1),
+            ]
+          ),
         ),
         const SizedBox(height: 20.0),
         Row(
