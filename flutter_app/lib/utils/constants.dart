@@ -1,6 +1,24 @@
-const String _objectsPath = 'images/objects';
-const String _backgroundPath = 'images/background';
-const String _imagePath = 'images';
+///------------------------------------------------------------------------///
+/// GardenObject/Timer constants
+///------------------------------------------------------------------------///
+
+const int timeTillGarbage = 10;
+const double timeTillGarbageDisposal = timeTillGarbage / 2;
+const int timeTillBigGarbage = 30;
+const double timeTillBigGarbageDisposal = timeTillBigGarbage / 2;
+const int timeTillFlower = 5;
+const double garbageMultiplier = 0.1;
+const double bigGarbageMultiplier = 0.5;
+const double timeTillWarning = timeTillGarbage / 2.5; 
+
+
+///------------------------------------------------------------------------///
+/// Image paths
+///------------------------------------------------------------------------///
+
+const String _objectsPath = 'assets/images/objects';
+const String _backgroundPath = 'assets/images/background';
+const String _imagePath = 'assets/images';
 
 class ImagePaths {
   static const String goodPosture = '$_imagePath/good_posture.png';
@@ -63,10 +81,3 @@ class FlowerImages{
   static const String flowerRosa = '$_objectsPath/flower_rosa.png';
   static const String flowerTurkis = '$_objectsPath/flower_turkis.png';
 }
-
-const int timeTillGarbage = 10;
-const double timeTillGarbageDisposal = timeTillGarbage / 2;
-const int timeTillBigGarbage = 30;
-const double timeTillBigGarbageDisposal = timeTillBigGarbage / 2;
-const int timeTillFlower = 5;
-const double timeTillWarning = timeTillGarbage / 2.5; 

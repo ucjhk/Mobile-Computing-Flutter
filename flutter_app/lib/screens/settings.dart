@@ -63,7 +63,7 @@ class _SettingsPage extends State<SettingsPage>{
         child: Column(children: [
           Row(
             children: <Widget>[
-              NumberPicker(initialValue: 10, steps: 5)
+              NumberPicker(name: "test",initialValue: 10, steps: 5)
             ],
           ),
         ]),

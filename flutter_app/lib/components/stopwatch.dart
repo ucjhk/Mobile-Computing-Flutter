@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/components/customInteractables.dart';
 import 'package:flutter_app/components/postureWidget.dart';
 import 'package:flutter_app/providers/stopWatchProvider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,11 +16,17 @@ class StopWatchWidget extends ConsumerWidget {
       children: <Widget>[
         Text(
           '${(stopWatch.seconds ~/ 3600).toString().padLeft(2, '0')}:${((stopWatch.seconds % 3600) ~/ 60).toString().padLeft(2, '0')}:${(stopWatch.seconds % 60).toString().padLeft(2, '0')}',
-          style: const TextStyle(fontSize: 48.0),
+          style: Theme.of(context).textTheme.displayLarge,
         ),
-        const SizedBox(height: 30.0),
-        PostureWidget(),
-        const SizedBox(height: 40.0),
+        const SizedBox(height: 20.0),
+        stopWatch.isRunning ? PostureWidget() : const Column(
+          children: [
+            SizedBox(height: 20.0),
+            NumberPicker(name: "Session Time", initialValue: 40, steps: 1),
+            NumberPicker(name: "Pause Time", initialValue: 5, steps: 1),
+          ]
+        ),
+        const SizedBox(height: 20.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[

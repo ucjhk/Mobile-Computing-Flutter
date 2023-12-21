@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/bottomNavigationBar.dart';
+import 'package:flutter_app/eSenseManager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'themes.dart';
 import 'screens/home.dart';
-import 'screens/history.dart';
+import 'screens/statistics.dart';
 import 'screens/settings.dart';
 
 
@@ -22,8 +23,6 @@ class FocusGarden extends StatelessWidget {
     return MaterialApp(
       title: 'Focus Garden',
       theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode: ThemeMode.light,
       home: const MyHomePage(),
     );
   }
@@ -40,7 +39,7 @@ class MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
     const HomePage(),
-    HistoryPage(),
+    StatisticsPage(),
     SettingsPage(),
   ];
 

@@ -19,12 +19,17 @@ ThemeData lightTheme = ThemeData(
   useMaterial3: true,
   primaryColor: primaryColor,
   textTheme: const TextTheme(
-    displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-    bodyLarge: TextStyle(fontSize: 18, color: darkColor),
+    bodyMedium: TextStyle(fontSize: 16, color: primaryColor),
+    bodySmall: TextStyle(fontSize: 15, color: subtleColor),
+    displayLarge: TextStyle(fontSize: 48, color: darkColor),
   ),
   appBarTheme: const AppBarTheme(
     color: primaryColor,
     iconTheme: IconThemeData(color: darkColor),
+  ),
+  cardTheme: const CardTheme(
+    color: lightColor,
+    shadowColor: darkColor,
   ),
   colorScheme: ColorScheme.fromSeed(
     seedColor: secondaryColor,
@@ -32,28 +37,5 @@ ThemeData lightTheme = ThemeData(
     error : dangerColor,
     brightness: Brightness.light,
     background: lightColor,
-  ),
-);
-
-final ThemeData darkTheme = ThemeData(
-  brightness: Brightness.dark,
-  useMaterial3: true,
-  primaryColor: primaryColor,
-
-  textTheme: const TextTheme(
-    displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-    bodyLarge: TextStyle(fontSize: 18, color: lightColor),
-  ),
-  appBarTheme: const AppBarTheme(
-    color: primaryColor,
-    iconTheme: IconThemeData(color: lightColor),
-
-  ),
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: secondaryColor,
-    primary: primaryColor,
-    error: dangerColor,
-    brightness: Brightness.dark,
-    background: darkColor,
   ),
 );

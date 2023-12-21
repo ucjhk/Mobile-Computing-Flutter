@@ -6,6 +6,7 @@ import 'package:flutter_app/providers/postureProvider.dart';
 import 'package:flutter_app/providers/stopWatchProvider.dart';
 import 'package:flutter_app/storingFiles.dart';
 import 'package:flutter_app/utils/constants.dart';
+import 'package:flutter_app/utils/helperMethods.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuple/tuple.dart';
 
@@ -18,21 +19,20 @@ class GardenWidget extends ConsumerStatefulWidget {
   ConsumerState<GardenWidget> createState() => _GardenWidgetState();
 }
 
-int getFirstGarbageInList(List<Widget> list){
-  for(int i = 0; i < list.length; i++){
-    if(list[i] is GarbageWidget || list[i] is BigGarbageWidget){
-      return i;
-    }
-  }
-  return -1;
+
+enum ObjectTimer{
+  garbageTimer,
+  garbageRemoverTimer,
+  flowerTimer
 }
 
 class _GardenWidgetState extends ConsumerState<GardenWidget> {
   List<GardenObjectWidget> _gardenObjects = [];
-  int _goodPostureTimer = 0;
-  int _badPostureTimer = 0;
+  int _flowerTimer = 0;
+  int _garbageRemoverTimer = 0;
+  int _garbageTimer = 0;
 
-  @override
+/*   @override
   void initState() {
     super.initState();
     readFromFile().then((value) {
@@ -40,27 +40,51 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
         _gardenObjects = value;
       });
     });
+  } */
+
+
+  setTimer(ObjectTimer timer, int value){
+    setState(() {
+      switch(timer){
+      case ObjectTimer.garbageTimer:
+        _garbageTimer = value;
+        break;
+      case ObjectTimer.garbageRemoverTimer:
+        _garbageRemoverTimer = value;
+        break;
+      case ObjectTimer.flowerTimer:
+        _flowerTimer = value;
+        break;
+    }
+    });
   }
 
   timerChecking(){
-    if(_goodPostureTimer >= timeTillFlower){
-      int garbageIndex = getFirstGarbageInList(_gardenObjects);
-      if(garbageIndex != -1){
-        if(_goodPostureTimer >= (_gardenObjects[garbageIndex] is BigGarbageWidget ? timeTillBigGarbageDisposal : timeTillGarbageDisposal)){
-          _goodPostureTimer = 0;
-          _gardenObjects.removeAt(garbageIndex);
-        }
-      }
-      else{
-        _goodPostureTimer = 0;
-        addObject<FlowerWidget>();
+    //Reove Garbage while good posture
+    int garbageIndex = getFirstGarbageInList(_gardenObjects);
+    if(garbageIndex != -1){
+      if(_garbageRemoverTimer >= (_gardenObjects[garbageIndex] is BigGarbageWidget ? timeTillBigGarbageDisposal : timeTillGarbageDisposal)){
+        removeObject(garbageIndex);
+        setTimer(ObjectTimer.garbageRemoverTimer, 0);
       }
     }
-    if(_badPostureTimer >= timeTillWarning){
+    else{
+      setTimer(ObjectTimer.garbageRemoverTimer, 0);
+    }
+    //Add Flowers (Slower Growing if more Garbage)
+    if(_flowerTimer >= (timeTillFlower + timeTillFlower * 
+    (getObjectCount<GarbageWidget>(_gardenObjects) * garbageMultiplier + 
+    getObjectCount<BigGarbageWidget>(_gardenObjects) * bigGarbageMultiplier))){
+      setTimer(ObjectTimer.flowerTimer, 0);
+      addObject<FlowerWidget>();
+    }
+    //Warning Signal
+    if(_garbageTimer >= timeTillWarning){
       //TODO warningsignal and screenshaking maybe pulse red
     }
-    if(_badPostureTimer >= timeTillBigGarbage){
-      _badPostureTimer = 0;
+    //Add Garbage if bad posture for too long
+    if(_garbageTimer >= timeTillBigGarbage){
+      setTimer(ObjectTimer.garbageTimer, 0);
       addObject<BigGarbageWidget>();
     }
   }
@@ -68,23 +92,31 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
   changeTimers(){
     final posture = ref.watch(postureProvider);
     if(posture.isGoodPosture){
-      _goodPostureTimer++;
+      setState(() {
+        _flowerTimer++;
+        _garbageRemoverTimer++;
+      });
 
-      if(_badPostureTimer >= timeTillBigGarbage){
-        addObject<BigGarbageWidget>();
-      }
-      else if(_badPostureTimer >= timeTillGarbage){
+      if(_garbageTimer >= timeTillGarbage){
         addObject<GarbageWidget>();
       }
-
-      _badPostureTimer = 0;
+      setTimer(ObjectTimer.garbageTimer, 0);
     }
     else{
-      _badPostureTimer++;
+      setState(() {
+        _garbageTimer++;
+      });
     }
   }
 
-  Future <void> addObject<T extends GardenObjectWidget>() {
+  removeObject(int index){
+    setState(() {
+      _gardenObjects.removeAt(index);
+    });
+  }
+
+  //Future<void>
+  addObject<T extends GardenObjectWidget>() {
     int xLength = widget.widthArea.item2 - widget.widthArea.item1;
     int yLength = widget.heightArea.item2 - widget.heightArea.item1;
     int xPos = Random().nextInt(xLength) + widget.widthArea.item1;
@@ -93,7 +125,7 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
 
     int insertionIndex = 0;
     for (int i = 0; i < _gardenObjects.length; i++) {
-      if((_gardenObjects[i] as GardenObjectWidget).distance < distance) {
+      if((_gardenObjects[i]).distance < distance) {
         insertionIndex++;
       }
       else {
@@ -109,7 +141,7 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
       });
     }); 
 
-    return saveToFile(_gardenObjects);
+    //return saveToFile(_gardenObjects);
   }
 
 
