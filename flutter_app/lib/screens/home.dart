@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/components/customInteractables.dart';
 import 'package:flutter_app/components/gardenWidget.dart';
 import 'package:flutter_app/components/stopwatch.dart';
 import 'package:flutter_app/utils/constants.dart';
@@ -21,13 +22,18 @@ class HomePage extends StatelessWidget {
           child: Container(
             //this is for testing mobile size on web
             width: kIsWeb ? 500.0 : double.infinity,
-            child: const Stack(
+            child: Stack(
               children: [
-                GardenWidget(
+                const GardenWidget(
                   widthArea: Tuple2(-90, 350),
                   heightArea: Tuple2(250, 500)
                   ),
-                StopWatchWidget()
+                const StopWatchWidget(),
+                Container(
+                  padding: const EdgeInsets.all(15.0),
+                  alignment: Alignment.topRight,
+                  child: const MuteButton()
+                ),
               ]
             ),
           ),

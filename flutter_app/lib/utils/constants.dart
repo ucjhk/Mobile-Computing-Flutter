@@ -1,16 +1,28 @@
 ///------------------------------------------------------------------------///
-/// GardenObject/Timer constants
+/// GardenObject constants
 ///------------------------------------------------------------------------///
 
+//in days
+const int daysUntilDispose = 3;
+//in %
+const double disposeMultiplier = 0.1;
+const double garbageMultiplier = 0.1;
+const double bigGarbageMultiplier = 0.5;
+//in seconds
 const int timeTillGarbage = 10;
 const double timeTillGarbageDisposal = timeTillGarbage / 2;
 const int timeTillBigGarbage = 30;
 const double timeTillBigGarbageDisposal = timeTillBigGarbage / 2;
 const int timeTillFlower = 5;
-const double garbageMultiplier = 0.1;
-const double bigGarbageMultiplier = 0.5;
 const double timeTillWarning = timeTillGarbage / 2.5; 
 
+///------------------------------------------------------------------------///
+/// StopWatch constants
+///------------------------------------------------------------------------///
+
+//in minutes
+const int sessionTime = 40;
+const int pauseTime = 5;
 
 ///------------------------------------------------------------------------///
 /// Image paths

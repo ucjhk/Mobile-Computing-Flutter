@@ -9,6 +9,7 @@ const Color informationColor = Colors.blue;
 const Color successColor = Colors.green;
 const Color dangerColor = Colors.red;
 const Color cautionColor = Colors.yellow;
+const Color disabledColor = Colors.grey;
 
 const Color darkColor = Color.fromARGB(200, 0, 0, 0);
 const Color lightColor = Color.fromARGB(230, 255, 255, 255);

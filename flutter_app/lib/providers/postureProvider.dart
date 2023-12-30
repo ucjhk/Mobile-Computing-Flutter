@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_app/providers/stopWatchProvider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 
 final postureProvider = ChangeNotifierProvider<PostureNotifier>((ref) {
   return PostureNotifier();

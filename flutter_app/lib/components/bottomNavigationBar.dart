@@ -32,10 +32,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
           icon: Icon(Icons.show_chart),
           label: 'Statistics',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: 'Settings',
-        ),
       ],
     );
   }

@@ -1,13 +1,36 @@
 import 'package:flutter/material.dart';
+import 'dart:core';
+import 'package:flutter_app/providers/settingsProvider.dart';
 import 'package:flutter_app/themes.dart';
+import 'package:flutter_app/themes.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tuple/tuple.dart';
+
+class MuteButton extends ConsumerWidget{
+  const MuteButton({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+    return IconButton(
+      iconSize: 30,
+      onPressed: settings.toggleMute,
+      icon: Icon(
+        settings.muted ? Icons.volume_off: Icons.volume_up,
+        color: settings.muted ? dangerColor : darkColor
+      ),
+    );
+  }
+}
 
 class NumberPicker extends StatefulWidget {
   final String name;
   final int initialValue;
   final int steps;
+  final Tuple2<int, int> range;
   final ValueChanged<int>? onChanged;
 
-  const NumberPicker({super.key, required this.name, required this.initialValue, required this.steps, this.onChanged});
+  const NumberPicker({super.key, required this.name, required this.initialValue, required this.steps, required this.range, this.onChanged});
 
   @override
   _NumberPickerState createState() => _NumberPickerState();
@@ -22,8 +45,17 @@ class _NumberPickerState extends State<NumberPicker> {
     _value = widget.initialValue;
   }
 
+  bool _toLow(){
+    return _value - widget.steps < widget.range.item1;
+  }
+
+  bool _toHigh(){
+    return _value + widget.steps > widget.range.item2;
+  }
+
   void _increment() {
     setState(() {
+      if(_toHigh()) return;
       _value += widget.steps;
       widget.onChanged?.call(_value);
     });
@@ -31,6 +63,7 @@ class _NumberPickerState extends State<NumberPicker> {
 
   void _decrement() {
     setState(() {
+      if(_toLow()) return;
       _value -= widget.steps;
       widget.onChanged?.call(_value);
     });
@@ -58,9 +91,9 @@ class _NumberPickerState extends State<NumberPicker> {
                   child: Container(
                     width: 15.0,
                     height: 15.0,
-                    child: const Icon(
+                    child: Icon(
                       Icons.add,
-                      color: secondaryColor,
+                      color: _toHigh() ? disabledColor : secondaryColor ,
                       size: 15.0,
                     ),
                   ),
@@ -70,10 +103,10 @@ class _NumberPickerState extends State<NumberPicker> {
                   child: Container(
                     width: 15.0,
                     height: 15.0,
-                    child: const Icon(
+                    child: Icon(
                       Icons.remove,
                       size: 15.0,
-                      color: secondaryColor,
+                      color: _toLow() ? disabledColor : secondaryColor,
                     ),
                   ),
                 ), 
