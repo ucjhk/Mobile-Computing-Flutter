@@ -47,12 +47,10 @@ class MyHomePageState extends ConsumerState<MyHomePage> {
     const HomePage(),
     const StatisticsPage(),
   ];
-  ESenseHandler eSenseHandler = ESenseHandler('eSense-0723');
 
   @override
   void initState() {
     super.initState();
-    eSenseHandler.listenToESense();
     _initialize();
   }
 
@@ -62,29 +60,38 @@ class MyHomePageState extends ConsumerState<MyHomePage> {
     });
   }
 
-  @override
-  dispose(){
-    super.dispose();
-    eSenseHandler.disconnect();
-  }
-
 @override
   Widget build(BuildContext context) {
+    final eSense = ref.watch(eSenseHandler);
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          if (eSenseHandler.connected) {
-            eSenseHandler.disconnect();
-          } else {
-            await eSenseHandler.connectToESense();
-          }
-        },
-        child: Icon(eSenseHandler.connected ? Icons.bluetooth_connected : Icons.bluetooth_disabled),
-      ),
+      persistentFooterButtons: [
+        ElevatedButton(
+          onPressed: () async {
+            if (eSense.connected) {
+              eSense.disconnect();
+            } else {
+              await eSense.connectToESense();
+            }
+            setState(() {});
+          },
+          child: Icon(eSense.connected ? Icons.bluetooth_connected : Icons.bluetooth_disabled),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            if (eSense.sampling) {
+              eSense.pauseListenToSensorEvents();
+            } else {
+              eSense.startListenToSensorEvents();
+            }
+            setState(() {});
+          },
+          child: Icon(eSense.sampling ? Icons.pause : Icons.play_arrow),
+        ),
+      ],
       bottomNavigationBar: BottomNavigation(
         (value) => setState(() {
           _currentIndex = value;

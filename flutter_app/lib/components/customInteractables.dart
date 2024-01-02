@@ -89,23 +89,23 @@ class _NumberPickerState extends State<NumberPicker> {
                 GestureDetector(
                   onTap: _increment,
                   child: Container(
-                    width: 15.0,
-                    height: 15.0,
+                    width: 23.0,
+                    height: 23.0,
                     child: Icon(
                       Icons.add,
                       color: _toHigh() ? disabledColor : secondaryColor ,
-                      size: 15.0,
+                      size: 23.0,
                     ),
                   ),
                 ),
                 GestureDetector(
                   onTap: _decrement,
                   child: Container(
-                    width: 15.0,
-                    height: 15.0,
+                    width: 23.0,
+                    height: 23.0,
                     child: Icon(
                       Icons.remove,
-                      size: 15.0,
+                      size: 23.0,
                       color: _toLow() ? disabledColor : secondaryColor,
                     ),
                   ),

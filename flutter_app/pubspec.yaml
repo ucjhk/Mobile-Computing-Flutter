@@ -44,6 +44,7 @@ dependencies:
   esense_flutter: ^1.0.0
   fl_chart: ^0.65.0
   permission_handler: ^11.1.0
+  audioplayers: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,7 @@ flutter:
 
   
   assets:
+  - assets/sounds/
   - assets/images/
   - assets/images/background/
   - assets/images/objects/

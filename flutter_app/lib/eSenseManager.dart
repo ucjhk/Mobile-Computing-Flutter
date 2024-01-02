@@ -1,62 +1,58 @@
 import 'dart:async';
 import 'dart:io';
 
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:esense_flutter/esense.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_app/utils/constants.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:tuple/tuple.dart';
 
+final eSenseHandler = ChangeNotifierProvider((ref) => ESenseHandler(eSenseName));
 
-class ESenseHandler {
+class ESenseHandler extends ChangeNotifier{
   late ESenseManager _eSenseManager;
-  String _deviceStatus = '';
+  AudioPlayer audioPlayer = AudioPlayer();
   bool sampling = false;
-  String _event = '';
-  String _button = 'not pressed';
+  Tuple3<int, int, int> actualPosture = Tuple3(0, 0, 0);
+  Tuple3<int, int, int> desiredPosture = Tuple3(0, 0, 0);
+  Tuple3<int, int, int> offset = Tuple3(0, 0, 0);
   bool connected = false;
   StreamSubscription? subscription;
 
   ESenseHandler(String deviceName) {
     _eSenseManager = ESenseManager(deviceName);
+    listenToESense();
   }
 
   Future<void> connectToESense() async {
     if (!connected) {
       print('Trying to connect to eSense device...');
       connected = await _eSenseManager.connect();
-      _deviceStatus = connected ? 'connecting...' : 'connection failed';
     }
   }
 
   Future<void> listenToESense() async {
     await requestForPermissions();
 
-    // if you want to get the connection events when connecting,
-    // set up the listener BEFORE connecting...
     _eSenseManager.connectionEvents.listen((event) {
       print('CONNECTION event: $event');
 
       // when we're connected to the eSense device, we can start listening to events from it
-      if (event.type == ConnectionType.connected) _listenToESenseEvents();
+      if (event.type == ConnectionType.connected){
+        _listenToESenseEvents();
+        connected = true;
+      }
+      else if (event.type == ConnectionType.disconnected){
+        sampling = false;
         connected = false;
-        switch (event.type) {
-          case ConnectionType.connected:
-            _deviceStatus = 'connected';
-            connected = true;
-            break;
-          case ConnectionType.unknown:
-            _deviceStatus = 'unknown';
-            break;
-          case ConnectionType.disconnected:
-            _deviceStatus = 'disconnected';
-            sampling = false;
-            break;
-          case ConnectionType.device_found:
-            _deviceStatus = 'device_found';
-            break;
-          case ConnectionType.device_not_found:
-            _deviceStatus = 'device_not_found';
-            break;
-        }
-      });
+      }
+      else{
+        connected = false;
+      }
+    });
   }
 
   void _listenToESenseEvents() async {
@@ -65,18 +61,13 @@ class ESenseHandler {
 
       switch (event.runtimeType) {
         case ButtonEventChanged:
-          _button = (event as ButtonEventChanged).pressed
-              ? 'pressed'
-              : 'not pressed';
+        // Calibrate the default posture when the button is pressed
+          desiredPosture = actualPosture;
           break;
         case AccelerometerOffsetRead:
-          print('accelerometer offset: ${event as AccelerometerOffsetRead}');
-          break;
-        case AdvertisementAndConnectionIntervalRead:
-          // TODO
-          break;
-        case SensorConfigRead:
-          // TODO
+          offset = Tuple3((event as AccelerometerOffsetRead).offsetX!,
+              event.offsetY!, event.offsetZ!);
+          print('accelerometer offset: $event');
           break;
       }
     });
@@ -85,41 +76,33 @@ class ESenseHandler {
   }
 
   void _getESenseProperties() async {
-    // wait 2, 3, 4, 5, ... secs before getting the name, offset, etc.
-    // it seems like the eSense BTLE interface does NOT like to get called
-    // several times in a row -- hence, delays are added in the following calls
-    //Print the accelerometer data
     Timer(const Duration(seconds: 2),
         () async => await _eSenseManager.getAccelerometerOffset());
-    Timer(
-        const Duration(seconds: 4),
-        () async =>
-            await _eSenseManager.getAdvertisementAndConnectionInterval());
-    Timer(const Duration(seconds: 15),
-        () async => await _eSenseManager.getSensorConfig());
   }
 
 void startListenToSensorEvents() async {
-    // // any changes to the sampling frequency must be done BEFORE listening to sensor events
-    // print('setting sampling frequency...');
-    // await eSenseManager.setSamplingRate(10);
-
-    // subscribe to sensor event from the eSense device
     subscription = _eSenseManager.sensorEvents.listen((event) {
       print('SENSOR event: $event');
-      _event = event.toString();
+      actualPosture = Tuple3(event.accel![0], event.accel![1], event.accel![2]);
+      if((actualPosture.item3 - desiredPosture.item3).abs() > 500){
+        playASound();
+      }
     });
     sampling = true;
   }
 
-  void _pauseListenToSensorEvents() async {
+  void pauseListenToSensorEvents() async {
     subscription?.cancel();
     sampling = false;
   }
 
   void disconnect() {
-    _pauseListenToSensorEvents();
+    pauseListenToSensorEvents();
     _eSenseManager.disconnect();
+  }
+
+  void playASound() async {
+    await audioPlayer.play(AssetSource(warnSoundPath));
   }
 }
 

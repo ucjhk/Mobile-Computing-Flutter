@@ -17,6 +17,13 @@ const int timeTillFlower = 5;
 const double timeTillWarning = timeTillGarbage / 2.5; 
 
 ///------------------------------------------------------------------------///
+/// Earable constants
+/// ------------------------------------------------------------------------///
+
+const String eSenseName = 'eSense-0723';
+const String warnSoundPath = 'sounds/warn.mp3';
+
+///------------------------------------------------------------------------///
 /// StopWatch constants
 ///------------------------------------------------------------------------///
 

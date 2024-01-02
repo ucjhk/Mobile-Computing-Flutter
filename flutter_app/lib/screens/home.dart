@@ -19,26 +19,22 @@ class HomePage extends StatelessWidget {
           ),
         ),
         child: Center(
-          child: Container(
-            //this is for testing mobile size on web
-            width: kIsWeb ? 500.0 : double.infinity,
-            child: Stack(
-              children: [
-                const GardenWidget(
-                  widthArea: Tuple2(-90, 350),
-                  heightArea: Tuple2(250, 500)
-                  ),
-                const StopWatchWidget(),
-                Container(
-                  padding: const EdgeInsets.all(15.0),
-                  alignment: Alignment.topRight,
-                  child: const MuteButton()
+          child: Stack(
+            children: [
+              const GardenWidget(
+                widthArea: Tuple2(-90, 350),
+                heightArea: Tuple2(250, 500)
                 ),
-              ]
-            ),
+              const StopWatchWidget(),
+              Container(
+                padding: const EdgeInsets.all(15.0),
+                alignment: Alignment.topRight,
+                child: const MuteButton()
+              ),
+            ]
           ),
-        )
-      ),
+        ),
+      )
     );
   }
 }
