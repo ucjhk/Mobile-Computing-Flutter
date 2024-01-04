@@ -5,6 +5,7 @@ final settingsProvider = ChangeNotifierProvider<SettingsNotifier>((ref) {
   return SettingsNotifier();
 });
 
+
 class SettingsNotifier extends ChangeNotifier {
   bool muted = false;
 

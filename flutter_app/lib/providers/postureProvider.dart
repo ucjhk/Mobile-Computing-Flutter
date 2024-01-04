@@ -9,7 +9,7 @@ final postureProvider = ChangeNotifierProvider<PostureNotifier>((ref) {
 
 class PostureNotifier extends ChangeNotifier {
   bool isGoodPosture = true;
-
+ 
   void toggleImage() {
     isGoodPosture = !isGoodPosture;
     notifyListeners();

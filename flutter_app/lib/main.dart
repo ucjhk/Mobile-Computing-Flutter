@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:esense_flutter/esense.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/bottomNavigationBar.dart';
-import 'package:flutter_app/eSenseManager.dart';
+import 'package:flutter_app/providers/eSenseManager.dart';
 import 'package:flutter_app/providers/statisticsProvider.dart';
 import 'package:flutter_app/utils/storingFiles.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,7 +62,8 @@ class MyHomePageState extends ConsumerState<MyHomePage> {
 
 @override
   Widget build(BuildContext context) {
-    final eSense = ref.watch(eSenseHandler);
+    final eSenseNotifier = ref.watch(eSenseHandlerProvider.notifier);
+    final eSense = ref.watch(eSenseHandlerProvider);
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
@@ -74,22 +75,18 @@ class MyHomePageState extends ConsumerState<MyHomePage> {
             if (eSense.connected) {
               eSense.disconnect();
             } else {
-              await eSense.connectToESense();
+              await eSenseNotifier.connectToESense();
             }
             setState(() {});
           },
           child: Icon(eSense.connected ? Icons.bluetooth_connected : Icons.bluetooth_disabled),
         ),
         ElevatedButton(
-          onPressed: () async {
-            if (eSense.sampling) {
-              eSense.pauseListenToSensorEvents();
-            } else {
-              eSense.startListenToSensorEvents();
-            }
+          onPressed: () {
+            eSenseNotifier.startListenToSensorEvents();
             setState(() {});
           },
-          child: Icon(eSense.sampling ? Icons.pause : Icons.play_arrow),
+          child: const Icon(Icons.play_arrow),
         ),
       ],
       bottomNavigationBar: BottomNavigation(

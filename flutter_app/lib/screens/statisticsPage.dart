@@ -26,9 +26,9 @@ class StatisticsPage extends ConsumerWidget {
             CardWidget(text: 'Overall Learn Time', value: '${sessionTime.item1} ${sessionTime.item2.toString()}'),
             CardWidget(text: 'Last 7 Days Learn Time', value: '${lastSevenDaysSessionTime.item1} ${lastSevenDaysSessionTime.item2.toString()}'),
             CardWidget(text: 'Last 30 Days Learn Time', value: '${lastThirtyDaysSessionTime.item1} ${lastThirtyDaysSessionTime.item2.toString()}'),
-            CardWidget(text: 'Correct Posture', value: '${statistics.posturePercentage()*100}%'),
-            CardWidget(text: 'Posture Last 7 Days', value: '${statistics.lastDaysPosturePercentage(7)*100}%'),
-            CardWidget(text: 'Posture Last 30 Days', value: '${statistics.lastDaysPosturePercentage(30)*100}%'),
+            CardWidget(text: 'Correct Posture', value: '${statistics.posturePercentage()}%'),
+            CardWidget(text: 'Posture Last 7 Days', value: '${statistics.lastDaysPosturePercentage(7)}%'),
+            CardWidget(text: 'Posture Last 30 Days', value: '${statistics.lastDaysPosturePercentage(30)}%'),
             statistics.lastDaysPostureChart(7),
           ],
         )

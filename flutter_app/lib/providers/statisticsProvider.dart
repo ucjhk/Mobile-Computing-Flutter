@@ -5,12 +5,19 @@ import 'package:flutter_app/statistics.dart';
 import 'package:flutter_app/utils/storingFiles.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+
 final statisticsProvider = ChangeNotifierProvider<StatisticsNotifier>((ref) {
   return StatisticsNotifier();
 });
 
 class StatisticsNotifier extends ChangeNotifier {
   Statistics statistics = Statistics(mostFlowers: 0, sessions: []);
+
+  StatisticsNotifier() {
+    readStatisticsFromFile().then((value) {
+      initialize(value);
+    });
+  }
 
   void initialize(Statistics value) {
     statistics = value;

@@ -19,7 +19,7 @@ class Statistics{
   factory Statistics.fromJson(Map<String, dynamic> json) {
     return Statistics(
       mostFlowers: json['mostFlowers'],
-      sessions: json['sessions'].map((item) => SessionStatistic.fromJson(item)).toList(),
+      sessions: List<SessionStatistic>.from((json['session']?? []).map((item) => SessionStatistic.fromJson(item))),
     );
   }
 
@@ -43,7 +43,7 @@ class Statistics{
   }
 
     double _getPosture(List<SessionStatistic> list){
-    return list.fold(0.0, (previousValue, element) => previousValue + element.goodPosturePercentage) / list.length;
+    return list.fold(0.0, (previousValue, element) => previousValue + (element.goodPosturePercentage * 100).round()) / list.length;
   }
 
   double lastDaysPosturePercentage(int days){
@@ -151,7 +151,7 @@ class PostureChart extends StatelessWidget {
             lineBarsData: [
               LineChartBarData(
                 spots: sessions.take(maxEntriesToShow).toList().asMap().entries
-                    .map((entry) => FlSpot(entry.key.toDouble(), entry.value.goodPosturePercentage * 100)).toList(),
+                    .map((entry) => FlSpot(entry.key.toDouble(), (entry.value.goodPosturePercentage * 100).round().toDouble())).toList(),
                 isCurved: true,
                 color: Colors.blue,
                 barWidth: 4, // Adjust the width of the line

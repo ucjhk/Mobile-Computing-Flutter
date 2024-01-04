@@ -13,6 +13,7 @@ class StopWatchWidget extends ConsumerWidget {
 
   Widget displayWidget(BuildContext context, WidgetRef ref){
     final stopWatch = ref.watch(stopWatchProvider);
+    final stopWatchNotifier = ref.watch(stopWatchProvider.notifier);
     if(stopWatch.sessionActive){
       if(stopWatch.isRunning){
         return PostureWidget();
@@ -20,19 +21,12 @@ class StopWatchWidget extends ConsumerWidget {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            NumberPicker(name: "Session Time", initialValue: stopWatch.session, steps: 1, range: const Tuple2(1, 999), onChanged: (value) => stopWatch.setSession(value)),
-            NumberPicker(name: "Pause Time", initialValue: stopWatch.pause, steps: 1, range: const Tuple2(0, 999), onChanged: (value) => stopWatch.setPause(value)),
+            NumberPicker(name: "Session Time", initialValue: stopWatch.session, steps: 1, range: const Tuple2(1, 999), onChanged: (value) => stopWatchNotifier.setSession(value)),
+            NumberPicker(name: "Pause Time", initialValue: stopWatch.pause, steps: 1, range: const Tuple2(0, 999), onChanged: (value) => stopWatchNotifier.setPause(value)),
           ]
         );
       }
     } else {
-      final posture = ref.watch(postureProvider);
-      ref.watch(statisticsProvider).addSession(SessionStatistic(
-        goodPosturePercentage: 0, //posture.goodPostureTime / stopWatch.session,
-        pauseTime: stopWatch.pause.toDouble(),
-        sessionTime: stopWatch.session.toDouble(),
-        day: DateTime.now(),
-      ));
       return Container(
         alignment: Alignment.center,
         child: Text("Pause", style: Theme.of(context).textTheme.displayLarge),
@@ -42,7 +36,9 @@ class StopWatchWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final stopWatchNotifier = ref.watch(stopWatchProvider.notifier);
     final stopWatch = ref.watch(stopWatchProvider);
+
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -61,12 +57,12 @@ class StopWatchWidget extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-              onPressed: () => stopWatch.isRunning ? stopWatch.stop() : stopWatch.start(),
+              onPressed: () => stopWatch.isRunning ? stopWatchNotifier.stop() : stopWatchNotifier.start(),
               child: Text(stopWatch.isRunning ? 'Stop' : 'Start'),
             ),
             const SizedBox(width: 20.0),
             ElevatedButton(
-              onPressed: () => stopWatch.reset(),
+              onPressed: () => stopWatchNotifier.reset(),
               child: const Text('Reset'),
             ),
           ],
