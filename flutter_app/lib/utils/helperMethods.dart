@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/gardenComponents.dart';
+import 'package:flutter_app/statistics.dart';
 import 'package:tuple/tuple.dart';
 
 int getFirstGarbageInList(List<Widget> list){
@@ -22,6 +23,21 @@ int getObjectCount<T extends GardenObjectWidget>(List<Widget> list){
   }
   return count;
 }
+
+  Map<DateTime, List<SessionStatistic>> groupByDate(List<SessionStatistic> sessions) {
+    Map<DateTime, List<SessionStatistic>> groupedSessions = {};
+
+    // Group sessions by date
+    for (var session in sessions) {
+      DateTime date = DateTime(session.date.year, session.date.month, session.date.day);
+      if (!groupedSessions.containsKey(date)) {
+        groupedSessions[date] = [];
+      }
+      groupedSessions[date]!.add(session);
+    }
+
+    return groupedSessions;
+  }
 
 enum TimeValues{
   seconds,

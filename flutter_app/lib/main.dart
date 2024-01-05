@@ -54,10 +54,17 @@ class MyHomePageState extends ConsumerState<MyHomePage> {
     _initialize();
   }
 
+  @override
+  void dispose() {
+    ref.watch(eSenseHandlerProvider.notifier).disconnect();
+    super.dispose();
+  }
+
   Future<void> _initialize() async {
     await readStatisticsFromFile().then((value) {
       ref.watch(statisticsProvider).initialize(value);
     });
+    ref.watch(eSenseHandlerProvider.notifier).listenToESense();
   }
 
 @override
@@ -69,7 +76,7 @@ class MyHomePageState extends ConsumerState<MyHomePage> {
         index: _currentIndex,
         children: _pages,
       ),
-      persistentFooterButtons: [
+      /* persistentFooterButtons: [
         ElevatedButton(
           onPressed: () async {
             if (eSense.connected) {
@@ -83,12 +90,12 @@ class MyHomePageState extends ConsumerState<MyHomePage> {
         ),
         ElevatedButton(
           onPressed: () {
-            eSenseNotifier.startListenToSensorEvents();
+            eSenseNotifier.playASound();
             setState(() {});
           },
           child: const Icon(Icons.play_arrow),
         ),
-      ],
+      ], */
       bottomNavigationBar: BottomNavigation(
         (value) => setState(() {
           _currentIndex = value;

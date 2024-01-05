@@ -1,5 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/components/customWidgets.dart';
+import 'package:flutter_app/utils/helperMethods.dart';
 
 class Statistics{
   /// All time record of being active user
@@ -35,7 +37,7 @@ class Statistics{
     List<SessionStatistic> lastDays = [];
     DateTime now = DateTime.now();
     for (int i = 0; i < sessions.length; i++){
-      if (now.difference(sessions[i].day).inDays <= days){
+      if (now.difference(sessions[i].date).inDays <= days){
         lastDays.add(sessions[i]);
       }
     }
@@ -79,7 +81,11 @@ class Statistics{
   }
 
   PostureChart lastDaysPostureChart(int days){
-    return PostureChart(sessions: _lastDays(days));
+    return PostureChart(sessions: _lastDays(days), maxEntriesToShow: days);
+  }
+
+  TimeChart lastDaysSessionTimeChart(int days){
+    return TimeChart(sessions: _lastDays(days), maxEntriesToShow: days);
   }
 
 }
@@ -88,16 +94,16 @@ class SessionStatistic{
   double goodPosturePercentage;
   double pauseTime;
   double sessionTime;
-  DateTime day;
+  DateTime date;
 
-  SessionStatistic({required this.goodPosturePercentage, required this.pauseTime, required this.sessionTime, required this.day});
+  SessionStatistic({required this.goodPosturePercentage, required this.pauseTime, required this.sessionTime, required this.date});
 
   Map<String, dynamic> toJson() {
     return {
       'goodPosturePercentage': goodPosturePercentage,
       'pauseTime': pauseTime,
       'sessionTime': sessionTime,
-      'day': day.toIso8601String(),
+      'date': date.toIso8601String(),
     };
   }
 
@@ -106,60 +112,52 @@ class SessionStatistic{
       goodPosturePercentage: json['goodPosturePercentage'],
       pauseTime: json['pauseTime'],
       sessionTime: json['sessionTime'],
-      day: DateTime.parse(json['day']),
+      date: DateTime.parse(json['date']),
     );
   }
 }
 
 class PostureChart extends StatelessWidget {
   final List<SessionStatistic> sessions;
-  final int maxEntriesToShow = 7;
+  final int maxEntriesToShow;
 
-  const PostureChart({super.key, required this.sessions});
+  const PostureChart({super.key, required this.sessions, required this.maxEntriesToShow});
+
+  List<double> sessionsGoodPosture(Map<DateTime, List<SessionStatistic>> groupedSessions) {
+    List<double> result = [];
+    for (var entry in groupedSessions.entries) {
+      double sum = entry.value.fold(0, (previousValue, element) => previousValue + element.goodPosturePercentage);
+      double average = sum / entry.value.length;
+
+      result.add((average * 100).round().toDouble());
+    }
+    return result;
+  }
 
   @override
   Widget build(BuildContext context) {
+    return ChartWidget(maxEntriesToShow: maxEntriesToShow, values: sessionsGoodPosture(groupByDate(sessions)));
+  }
+}
 
-    /* sessions.add(SessionStatistic(goodPosturePercentage: 0.5, pauseTime: 0, sessionTime: 0, day: DateTime.now()));
-    sessions.add(SessionStatistic(goodPosturePercentage: 0.2, pauseTime: 0, sessionTime: 0, day: DateTime.now()));
-    sessions.add(SessionStatistic(goodPosturePercentage: 0.1, pauseTime: 0, sessionTime: 0, day: DateTime.now()));
-    sessions.add(SessionStatistic(goodPosturePercentage: 0.2, pauseTime: 0, sessionTime: 0, day: DateTime.now())); */
-    return SizedBox(
-      //TODO: make this responsive
-      width: 400,
-      height: 150,
-      child: sessions.isEmpty ?
-        const Center(child: Text('No Data')) : 
-        LineChart(
-          LineChartData(
-            gridData: const FlGridData(show: true),
-            titlesData: const FlTitlesData(
-              show: true,
-              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            ),
-            borderData: FlBorderData(
-              show: true,
-              border: Border.all(color: const Color(0xff37434d), width: 1),
-            ),
-            minX: 0,
-            maxX: maxEntriesToShow.toDouble(),
-            minY: 0,
-            maxY: sessions
-                .map((session) => session.goodPosturePercentage * 100)
-                .reduce((a, b) => a > b ? a : b) + 10,
-            lineBarsData: [
-              LineChartBarData(
-                spots: sessions.take(maxEntriesToShow).toList().asMap().entries
-                    .map((entry) => FlSpot(entry.key.toDouble(), (entry.value.goodPosturePercentage * 100).round().toDouble())).toList(),
-                isCurved: true,
-                color: Colors.blue,
-                barWidth: 4, // Adjust the width of the line
-                belowBarData: BarAreaData(show: false),
-              ),
-            ],
-          ),
-        ),
-    );
+class TimeChart extends StatelessWidget {
+  final List<SessionStatistic> sessions;
+  final int maxEntriesToShow;
+
+  const TimeChart({super.key, required this.sessions, required this.maxEntriesToShow});
+
+  List<double> summedTime(Map<DateTime, List<SessionStatistic>> groupedSessions) {
+    List<double> result = [];
+    for (var entry in groupedSessions.entries) {
+      double sum = entry.value.fold(0, (previousValue, element) => previousValue + element.sessionTime);
+
+      result.add(sum);
+    }
+    return result;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChartWidget(maxEntriesToShow: maxEntriesToShow, values: summedTime(groupByDate(sessions)));
   }
 }

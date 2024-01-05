@@ -13,12 +13,46 @@ class MuteButton extends ConsumerWidget{
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     return IconButton(
-      iconSize: 30,
+      iconSize: 35,
       onPressed: settings.toggleMute,
       icon: Icon(
         settings.muted ? Icons.volume_off: Icons.volume_up,
         color: settings.muted ? dangerColor : darkColor
       ),
+    );
+  }
+}
+
+/* class SliderWidget extends  {
+
+  final double minSliderValue;
+  final double maxSliderValue;
+  final int divisions;
+
+  const SliderWidget({super.key, required this.minSliderValue, required this.maxSliderValue, required this.divisions});
+  @override
+  _SLiderState createState() => _SLiderState();
+} */
+
+class SliderWidget extends ConsumerWidget {
+  final double minSliderValue;
+  final double maxSliderValue;
+  final int divisions;
+
+  const SliderWidget({super.key, required this.minSliderValue, required this.maxSliderValue, required this.divisions});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+    return Slider(
+      value: settings.scale,
+      onChanged: (value) {
+        settings.changeScale(value);
+      },
+      min: minSliderValue,
+      max: maxSliderValue,
+      divisions: divisions,
+      label: settings.scale.toString(),
     );
   }
 }

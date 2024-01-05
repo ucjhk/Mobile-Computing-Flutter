@@ -55,7 +55,7 @@ class StopWatch extends _$StopWatch{
                 goodPosturePercentage: state.goodPostureTime / (state.session * 60),
                 pauseTime: state.pause.toDouble(),
                 sessionTime: state.session.toDouble(),
-                day: DateTime.now(),
+                date: DateTime.now(),
               ));
             }
             state.sessionActive = false;

@@ -8,6 +8,12 @@ final settingsProvider = ChangeNotifierProvider<SettingsNotifier>((ref) {
 
 class SettingsNotifier extends ChangeNotifier {
   bool muted = false;
+  double scale = 1.2;
+
+  void changeScale(double value) {
+    scale = value;
+    notifyListeners();
+  }
 
   void toggleMute() {
     muted = !muted;

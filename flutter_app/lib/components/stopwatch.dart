@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/customInteractables.dart';
+import 'package:flutter_app/components/customWidgets.dart';
 import 'package:flutter_app/components/postureWidget.dart';
 import 'package:flutter_app/providers/postureProvider.dart';
 import 'package:flutter_app/providers/statisticsProvider.dart';
@@ -39,35 +40,36 @@ class StopWatchWidget extends ConsumerWidget {
     final stopWatchNotifier = ref.watch(stopWatchProvider.notifier);
     final stopWatch = ref.watch(stopWatchProvider);
 
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          '${(stopWatch.seconds ~/ 3600).toString().padLeft(2, '0')}:${((stopWatch.seconds % 3600) ~/ 60).toString().padLeft(2, '0')}:${(stopWatch.seconds % 60).toString().padLeft(2, '0')}',
-          style: Theme.of(context).textTheme.displayLarge,
-        ),
-        const SizedBox(height: 10.0),
-        SizedBox(
-          height: 150.0,
-          child: displayWidget(context, ref)
-        ),
-        const SizedBox(height: 20.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () => stopWatch.isRunning ? stopWatchNotifier.stop() : stopWatchNotifier.start(),
-              child: Text(stopWatch.isRunning ? 'Stop' : 'Start'),
-            ),
-            const SizedBox(width: 20.0),
-            ElevatedButton(
-              onPressed: () => stopWatchNotifier.reset(),
-              child: const Text('Reset'),
-            ),
-          ],
-        ),
-      ],
+    return ScaleWidget(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            '${(stopWatch.seconds ~/ 3600).toString().padLeft(2, '0')}:${((stopWatch.seconds % 3600) ~/ 60).toString().padLeft(2, '0')}:${(stopWatch.seconds % 60).toString().padLeft(2, '0')}',
+            style: Theme.of(context).textTheme.displayLarge,
+          ),
+          const SizedBox(height: 10.0),
+          SizedBox(
+            height: 150.0,
+            child: displayWidget(context, ref)
+          ),
+          const SizedBox(height: 20.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () => stopWatch.isRunning ? stopWatchNotifier.stop() : stopWatchNotifier.start(),
+                child: Text(stopWatch.isRunning ? 'Stop' : 'Start'),
+              ),
+              const SizedBox(width: 20.0),
+              ElevatedButton(
+                onPressed: () => stopWatchNotifier.reset(),
+                child: const Text('Reset'),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
