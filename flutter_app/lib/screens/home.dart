@@ -22,10 +22,13 @@ class HomePage extends StatelessWidget {
         child: Stack(
           //alignment: Alignment.center,
           children: [
-            const GardenWidget(
-              widthArea: Tuple2(-90, 350),
-              heightArea: Tuple2(250, 500)
-              ),
+            LayoutBuilder(builder: (context, constraints) {
+              return GardenWidget(width: constraints.maxWidth.round(), height: constraints.maxHeight.round());
+            }), 
+            /* const GardenWidget(
+              width: Tuple2(-90, 350),
+              height: Tuple2(250, 500)
+              ), */
             const StopWatchWidget(),
             Container(
               padding: const EdgeInsets.all(25.0),

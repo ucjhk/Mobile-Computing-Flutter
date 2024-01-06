@@ -46,6 +46,6 @@ Future<Statistics> readStatisticsFromFile() async {
     final json = jsonDecode(jsonString);
     return Statistics.fromJson(json);
   } else {
-    return Statistics(mostFlowers: 0, sessions: []);
+    return Statistics(mostFlowers: 0,lastTime: DateTime.now(), sessions: []);
   }
 }

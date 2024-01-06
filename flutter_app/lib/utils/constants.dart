@@ -21,6 +21,9 @@ const double timeTillWarning = timeTillGarbage / 2.5;
 /// ------------------------------------------------------------------------///
 
 const String eSenseName = 'eSense-0723';
+const angelThreshold = 6;
+const samplingRate = 10;
+const cutoff = 2;
 const String warnSoundPath = 'sounds/warn.mp3';
 
 ///------------------------------------------------------------------------///

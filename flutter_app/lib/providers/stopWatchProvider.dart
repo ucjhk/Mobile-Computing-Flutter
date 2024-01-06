@@ -44,7 +44,7 @@ class StopWatch extends _$StopWatch{
   }
 
   void reset() {
-    state = state.copyWith(isRunning: false, seconds: 0);
+    state = state.copyWith(isRunning: false, seconds: state.sessionActive ? 0 : state.pause *60);
   }
 
   void updateTimer(isGoodPosture){
@@ -77,8 +77,6 @@ class StopWatch extends _$StopWatch{
             state.seconds--;
           }
         }
-        print(state.seconds);
-        print(state.goodPostureTime);
         state = state.copyWith();
       }
 }
@@ -104,84 +102,3 @@ class StopWatchState{
       ..goodPostureTime = goodPostureTime ?? this.goodPostureTime;
   }
 }
-
-
-/* final stopWatchProvider = ChangeNotifierProvider.family<StopWatchNotifier, PostureNotifier>((ref, postureProvider) {
-  return StopWatchNotifier(postureProvider);
-});
-
-class StopWatchNotifier extends ChangeNotifier {
-
-  bool sessionActive = true;
-  bool isRunning = false;
-  //in minutes
-  int session = sessionTime;
-  int pause = pauseTime;
-  //in seconds
-  int seconds = 0;
-  int goodPostureTime = 0;
-
-   // Reference to the PostureNotifier provider
-  final PostureNotifier postureNotifier;
-
-  // Constructor that takes a PostureNotifier reference
-  StopWatchNotifier(this.postureNotifier);
-
-  void setSession(int value){
-    session = value;
-    notifyListeners();
-  }
-
-  void setPause(int value){
-    pause = value;
-    notifyListeners();
-  }
-
-  void start() {
-    isRunning = true;
-    _updateTimer();
-  }
-
-  void stop() {
-    isRunning = false;
-    notifyListeners();
-  }
-
-  void reset() {
-    isRunning = false;
-    seconds = 0;
-    notifyListeners();
-  }
-
-  void _updateTimer() async {
-    Future<void>.delayed(Duration(seconds: 1), () {
-      if (isRunning) {
-        if(sessionActive){
-          if(seconds >= session * 60){
-            sessionActive = false;
-            seconds = pause * 60;
-          }
-          else {
-            if(postureNotifier.isGoodPosture){
-              goodPostureTime++;
-            }
-            seconds++;
-          }
-        }
-        else{
-          if(seconds <= 0){
-            sessionActive = true;
-            seconds = 0;
-          }
-          else {
-            seconds--;
-          }
-        }
-        print(seconds);
-        print(goodPostureTime);
-        notifyListeners();
-        _updateTimer();
-      }
-    });
-  }
-} */

@@ -6,14 +6,16 @@ import 'package:flutter_app/utils/helperMethods.dart';
 class Statistics{
   /// All time record of being active user
   int mostFlowers;
+  DateTime lastTime;
   /// sessions
   List<SessionStatistic> sessions;
 
-  Statistics({required this.mostFlowers, required this.sessions});
+  Statistics({required this.mostFlowers, required this.sessions, required this.lastTime});
 
   Map<String, dynamic> toJson() {
     return {
       'mostFlowers': mostFlowers,
+      'lastTime': lastTime.toIso8601String(),
       'session': sessions.map((item) => item.toJson()).toList(),
     };
   }
@@ -21,6 +23,7 @@ class Statistics{
   factory Statistics.fromJson(Map<String, dynamic> json) {
     return Statistics(
       mostFlowers: json['mostFlowers'],
+      lastTime: DateTime.parse(json['lastTime']?? DateTime.now().toIso8601String()),
       sessions: List<SessionStatistic>.from((json['session']?? []).map((item) => SessionStatistic.fromJson(item))),
     );
   }

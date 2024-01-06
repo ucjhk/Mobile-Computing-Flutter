@@ -11,7 +11,7 @@ final statisticsProvider = ChangeNotifierProvider<StatisticsNotifier>((ref) {
 });
 
 class StatisticsNotifier extends ChangeNotifier {
-  Statistics statistics = Statistics(mostFlowers: 0, sessions: []);
+  Statistics statistics = Statistics(mostFlowers: 0, lastTime: DateTime.now(), sessions: []);
 
   StatisticsNotifier() {
     readStatisticsFromFile().then((value) {

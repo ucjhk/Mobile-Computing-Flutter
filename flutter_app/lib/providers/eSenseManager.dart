@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:esense_flutter/esense.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/providers/postureProvider.dart';
 import 'package:flutter_app/providers/settingsProvider.dart';
 import 'package:flutter_app/utils/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -15,6 +16,7 @@ part 'eSenseManager.g.dart';
 
 @Riverpod(keepAlive: true)
 class ESenseHandler extends _$ESenseHandler{
+
   @override
   ESenseManager build() {
     return ESenseManager(eSenseName);
@@ -33,7 +35,6 @@ class ESenseHandler extends _$ESenseHandler{
   }
 
 Future<void> connectToESense() async {
-  await requestForPermissions();
 
   if(!state.connected){
     await state.connect();
@@ -41,6 +42,7 @@ Future<void> connectToESense() async {
     connectToESense();
   } 
 }
+
 
 Future<void> listenToESense() async {
   await requestForPermissions();
@@ -51,46 +53,28 @@ Future<void> listenToESense() async {
     if (event.type == ConnectionType.connected) {
       _listenToESenseEvents();
       startListenToSensorEvents();
-    } else if (event.type == ConnectionType.unknown || (event.type == ConnectionType.disconnected && state.connected)) {
+
+    } else if (event.type == ConnectionType.disconnected && !state.connected) {
       connectToESense();
     }
   });
 }
 
 void _listenToESenseEvents() async {
-  state.eSenseEvents.listen((event) {
-    print('ESENSE event: $event');
-
-    switch (event.runtimeType) {
-      case ButtonEventChanged:
-        // Calibrate the default posture when the button is pressed
-        break;
-      case AccelerometerOffsetRead:
-        /* offset = Tuple3((event as AccelerometerOffsetRead).offsetX!,
-              event.offsetY!, event.offsetZ!); */
-        print('accelerometer offset: $event');
-        break;
-    }
-  });
+  ref.watch(postureProvider).listenToEventStream(state.eSenseEvents);
 
   Timer(const Duration(seconds: 2),
       () async => await state.getAccelerometerOffset());
 }
 
-Future<void> startListenToSensorEvents() async {
+void startListenToSensorEvents() async {
+  await state.setSamplingRate(samplingRate);
   print('startListenToSensorEvents');
-  state.sensorEvents.listen((event) {
-    print('SENSOR event: ${event.accel}');
-    /* actualPosture = Tuple3(event.accel![0], event.accel![1], event.accel![2]);
-    if((actualPosture.item3 - desiredPosture.item3).abs() > 500){
-      //playASound();
-    } */
-  });
+  ref.watch(postureProvider).reTryStream(state.sensorEvents);
 }
 
-
-
-  void disconnect() {
+  Future<void> disconnect() async {
+    await ref.watch(postureProvider).cancelStreams();
     state.disconnect();
   }
 

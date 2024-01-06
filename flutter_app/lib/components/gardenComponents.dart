@@ -37,8 +37,8 @@ class GardenObjectWidget extends StatelessWidget {
       left: position.item1,
       top: position.item2,
       child: Image(
-        height: 50 + 200 * distance,
-        width: 50 + 200 * distance,
+        height: 400 * (distance -0.15),
+        width: 400 * (distance -0.15),
         fit: BoxFit.contain,
         image: AssetImage(imagePath)
       )
