@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/customWidgets.dart';
 import 'package:flutter_app/providers/statisticsProvider.dart';
-import 'package:flutter_app/statistics.dart';
+import 'package:flutter_app/classes/statistics.dart';
 import 'package:flutter_app/utils/helperMethods.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuple/tuple.dart';
@@ -26,7 +26,7 @@ class StatisticsPage extends ConsumerWidget {
             Padding(padding: const EdgeInsets.only(top: 50.0), 
               child: Text('Statistics', style: Theme.of(context).textTheme.displayLarge),
             ),
-            CardWidget(text: 'Flower Record', value: '30'),
+            CardWidget(text: 'Flower Record', value: statistics.mostFlowers.toString()),
             const SizedBox(height: 10.0),
             CardWidget(text: 'Overall Learn Time', value: '${sessionTime.item1} ${sessionTime.item2.toString()}'),
             CardWidget(text: 'Last 7 Days Learn Time', value: '${lastSevenDaysSessionTime.item1} ${lastSevenDaysSessionTime.item2.toString()}'),

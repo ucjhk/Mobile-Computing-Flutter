@@ -6,16 +6,14 @@ import 'package:tuple/tuple.dart';
 
 class GardenObjectWidget extends StatelessWidget {
   final String imagePath;
-  final int credits;
   final double distance;
   final Tuple2<double, double> position;
 
-  const GardenObjectWidget({super.key, this.imagePath ='', required this.credits, this.distance = 1, required this.position});
+  const GardenObjectWidget({super.key, this.imagePath ='', this.distance = 1, required this.position});
 
   Map<String, dynamic> toJson() {
     return {
       'imagePath': imagePath,
-      'credits': credits,
       'distance': distance,
       'position': {'x': position.item1, 'y': position.item2},
     };
@@ -24,7 +22,6 @@ class GardenObjectWidget extends StatelessWidget {
   factory GardenObjectWidget.fromJson(Map<String, dynamic> json) {
     return GardenObjectWidget(
       imagePath: json['imagePath'],
-      credits: json['credits'],
       distance: json['distance'],
       position: Tuple2(json['position']['x'], json['position']['y']),
     );
@@ -32,7 +29,6 @@ class GardenObjectWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("${position.item1}, ${position.item2}");
     return Positioned(
       left: position.item1,
       top: position.item2,
@@ -50,28 +46,44 @@ class GarbageWidget extends GardenObjectWidget {
   GarbageWidget({super.key, required double distance, required Tuple2<double, double> position})
       : super(
           distance: distance,
-          credits: -1,
           position: position,
           imagePath: ImagePaths.garbageImages[Random().nextInt(ImagePaths.garbageImages.length)],
         );
+  factory GarbageWidget.fromJson(Map<String, dynamic> json) {
+    return GarbageWidget(
+      distance: json['distance'],
+      position: Tuple2(json['position']['x'], json['position']['y']),
+    );
+  }
+        
 }
 
 class BigGarbageWidget extends GardenObjectWidget {
   BigGarbageWidget({super.key, required double distance, required Tuple2<double, double> position})
       : super(
           distance: distance,
-          credits: -5,
           position: position,
           imagePath: ImagePaths.bigGarbageImages[Random().nextInt(ImagePaths.bigGarbageImages.length)],
         );
+      factory BigGarbageWidget.fromJson(Map<String, dynamic> json) {
+    return BigGarbageWidget(
+      distance: json['distance'],
+      position: Tuple2(json['position']['x'], json['position']['y']),
+    );
+  }
 }
 
 class FlowerWidget extends GardenObjectWidget {
   FlowerWidget({super.key, required double distance, required Tuple2<double, double> position})
       : super(
           distance: distance,
-          credits: 1,
           position: position,
           imagePath: ImagePaths.flowerImages[Random().nextInt(ImagePaths.flowerImages.length)],
         );
+        factory FlowerWidget.fromJson(Map<String, dynamic> json) {
+    return FlowerWidget(
+      distance: json['distance'],
+      position: Tuple2(json['position']['x'], json['position']['y']),
+    );
+  }
 }

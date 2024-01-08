@@ -1,9 +1,4 @@
-import 'dart:ffi';
-
-import 'package:flutter/material.dart';
 import 'package:flutter_app/providers/postureProvider.dart';
-import 'package:flutter_app/providers/statisticsProvider.dart';
-import 'package:flutter_app/statistics.dart';
 import 'package:flutter_app/utils/constants.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -18,7 +13,7 @@ class StopWatch extends _$StopWatch{
   }
 
   void _updateTimer() async {
-    Future<void>.delayed(Duration(seconds: 1), () {
+    Future<void>.delayed(const Duration(seconds: 1), () {
       if(state.isRunning){
         updateTimer(ref.read(postureProvider).isGoodPosture);
         _updateTimer();
@@ -51,12 +46,14 @@ class StopWatch extends _$StopWatch{
         if(state.sessionActive){
           if(state.seconds >= state.session * 60){
             if(state.sessionActive){
-              ref.watch(statisticsProvider).addSession(SessionStatistic(
+              print(state.pause);
+              /* ref.watch(statisticsProvider).addSession(SessionStatistic(
                 goodPosturePercentage: state.goodPostureTime / (state.session * 60),
                 pauseTime: state.pause.toDouble(),
                 sessionTime: state.session.toDouble(),
                 date: DateTime.now(),
-              ));
+              )); */
+              print(state.pause);
             }
             state.sessionActive = false;
             state.seconds = state.pause * 60;

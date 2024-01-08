@@ -2,7 +2,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/providers/settingsProvider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tuple/tuple.dart';
 
 class CardWidget extends StatelessWidget{
 
@@ -43,9 +42,9 @@ class ScaleWidget extends ConsumerWidget {
 
 class ChartWidget extends StatelessWidget{
 
-  final maxEntriesToShow;
+  final int maxEntriesToShow;
   final List<double> values;
-  final Tuple4<bool,bool,bool,bool> showNumbers;
+  final bool showNumbers;
 
   const ChartWidget({super.key, required this.maxEntriesToShow, required this.values, required this.showNumbers});
 
@@ -53,7 +52,6 @@ class ChartWidget extends StatelessWidget{
   Widget build(BuildContext context) {
 
     return SizedBox(
-      //TODO: make this responsive
       width: 300,
       height: 150,
       child: values.isEmpty ?
@@ -62,11 +60,9 @@ class ChartWidget extends StatelessWidget{
           LineChartData(
             gridData: const FlGridData(show: true),
             titlesData: FlTitlesData(
-              show: true,
-              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: showNumbers.item3)),
-              leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: showNumbers.item1)),
-              bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: showNumbers.item4)),
-              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: showNumbers.item2)),
+              show: showNumbers,
+              rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
             borderData: FlBorderData(
               show: true,
@@ -82,7 +78,7 @@ class ChartWidget extends StatelessWidget{
                     .map((entry) => FlSpot(entry.key.toDouble(), entry.value)).toList(),
                 isCurved: true,
                 color: Theme.of(context).primaryColor,
-                barWidth: 4, // Adjust the width of the line
+                barWidth: 4, 
                 belowBarData: BarAreaData(show: false),
               ),
             ],

@@ -1,11 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/customInteractables.dart';
 import 'package:flutter_app/components/customWidgets.dart';
 import 'package:flutter_app/components/gardenWidget.dart';
 import 'package:flutter_app/components/stopwatch.dart';
 import 'package:flutter_app/utils/constants.dart';
-import 'package:tuple/tuple.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

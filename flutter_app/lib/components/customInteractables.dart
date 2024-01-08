@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:core';
 import 'package:flutter_app/providers/settingsProvider.dart';
 import 'package:flutter_app/themes.dart';
-import 'package:flutter_app/themes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuple/tuple.dart';
 

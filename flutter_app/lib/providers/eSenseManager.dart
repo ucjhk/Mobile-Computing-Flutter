@@ -4,13 +4,11 @@ import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:esense_flutter/esense.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_app/providers/postureProvider.dart';
 import 'package:flutter_app/providers/settingsProvider.dart';
 import 'package:flutter_app/utils/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:tuple/tuple.dart';
 
 part 'eSenseManager.g.dart';
 
@@ -38,7 +36,7 @@ Future<void> connectToESense() async {
 
   if(!state.connected){
     await state.connect();
-    await Future.delayed(Duration(seconds: 10));
+    await Future.delayed(const Duration(seconds: 10));
     connectToESense();
   } 
 }
@@ -66,7 +64,7 @@ void _listenToESenseEvents() async {
   Timer(const Duration(seconds: 2),
       () async => await state.getAccelerometerOffset());
 }
-
+ 
 void startListenToSensorEvents() async {
   await state.setSamplingRate(samplingRate);
   print('startListenToSensorEvents');

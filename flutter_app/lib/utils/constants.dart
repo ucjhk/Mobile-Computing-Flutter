@@ -6,6 +6,7 @@
 const int daysUntilDispose = 3;
 //in %
 const double disposeMultiplier = 0.1;
+//Time longer for flowers to grow
 const double garbageMultiplier = 0.1;
 const double bigGarbageMultiplier = 0.5;
 //in seconds

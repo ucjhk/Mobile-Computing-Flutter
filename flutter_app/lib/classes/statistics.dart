@@ -1,8 +1,6 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/customWidgets.dart';
 import 'package:flutter_app/utils/helperMethods.dart';
-import 'package:tuple/tuple.dart';
 
 class Statistics{
   /// All time record of being active user
@@ -89,11 +87,11 @@ class Statistics{
   }
 
   PostureChart thisDaysPostureChart(){
-    return PostureChart(sessions: sessionsGoodPosture(sessions), maxEntriesToShow: 5, showNumbers: const Tuple4(false,false,false,false),);
+    return PostureChart(sessions: getFirstFewElementsInList(sessionsGoodPosture(sessions), 5), maxEntriesToShow: 5, showNumbers: false);
   }
 
-  TimeChart lastDaysSessionTimeChart(int days){
-    return TimeChart(sessions: summedTime(_lastDays(days)), maxEntriesToShow: days);
+  PostureChart lastDaysSessionTimeChart(int days){
+    return PostureChart(sessions: summedTime(_lastDays(days)), maxEntriesToShow: days);
   }
 
 }
@@ -129,25 +127,12 @@ class SessionStatistic{
 class PostureChart extends StatelessWidget {
   final List<double> sessions;
   final int maxEntriesToShow;
-  final Tuple4<bool,bool,bool,bool> showNumbers;
+  final bool showNumbers;
 
-  const PostureChart({super.key, required this.sessions, required this.maxEntriesToShow, this.showNumbers = const Tuple4(true,false,false,true)});
+  const PostureChart({super.key, required this.sessions, required this.maxEntriesToShow, this.showNumbers = true});
 
   @override
   Widget build(BuildContext context) {
     return ChartWidget(maxEntriesToShow: maxEntriesToShow, values: (sessions), showNumbers: showNumbers);
-  }
-}
-
-class TimeChart extends StatelessWidget {
-  final List<double> sessions;
-  final int maxEntriesToShow;
-  final Tuple4<bool, bool, bool, bool> showNumbers;
-
-  const TimeChart({super.key, required this.sessions, required this.maxEntriesToShow, this.showNumbers = const Tuple4(true,false,false,true)});
-
-  @override
-  Widget build(BuildContext context) {
-    return ChartWidget(maxEntriesToShow: maxEntriesToShow, values: sessions, showNumbers: showNumbers,);
   }
 }

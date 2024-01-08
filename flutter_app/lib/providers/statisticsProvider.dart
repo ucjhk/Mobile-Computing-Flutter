@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/statistics.dart';
+import 'package:flutter_app/classes/statistics.dart';
 import 'package:flutter_app/utils/storingFiles.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

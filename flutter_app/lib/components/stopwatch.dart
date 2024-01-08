@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/components/customInteractables.dart';
 import 'package:flutter_app/components/customWidgets.dart';
 import 'package:flutter_app/components/postureWidget.dart';
-import 'package:flutter_app/providers/postureProvider.dart';
 import 'package:flutter_app/providers/statisticsProvider.dart';
 import 'package:flutter_app/providers/stopWatchProvider.dart';
-import 'package:flutter_app/statistics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuple/tuple.dart';
 

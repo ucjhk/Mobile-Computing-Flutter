@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/components/gardenComponents.dart';
+import 'package:flutter_app/classes/gardenComponents.dart';
 import 'package:flutter_app/providers/eSenseManager.dart';
 import 'package:flutter_app/providers/postureProvider.dart';
 import 'package:flutter_app/providers/statisticsProvider.dart';
@@ -98,14 +98,12 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
     //Reove Garbage while good posture
     int garbageIndex = getFirstGarbageInList(gardenObjects);
     if(garbageIndex != -1){
-      print('there is garbage');
       if(_garbageRemoverTimer >= (gardenObjects[garbageIndex] is BigGarbageWidget ? timeTillBigGarbageDisposal : timeTillGarbageDisposal)){
         removeObject(garbageIndex);
         _garbageRemoverTimer = 0;
       }
     }
     else{
-      print('no garbage');
       _garbageRemoverTimer = 0;
     }
     //Add Flowers (Slower Growing if more Garbage)

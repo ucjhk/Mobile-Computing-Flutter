@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/components/gardenComponents.dart';
-import 'package:flutter_app/statistics.dart';
+import 'package:flutter_app/classes/gardenComponents.dart';
+import 'package:flutter_app/classes/statistics.dart';
 import 'package:tuple/tuple.dart';
 
 int getFirstGarbageInList(List<Widget> list){
@@ -12,6 +12,17 @@ int getFirstGarbageInList(List<Widget> list){
     }
   }
   return -1;
+}
+
+List<double> getFirstFewElementsInList(List<double> list, int number){
+  List<double> result = [];
+  for (var i = list.length - 1; i > 0; i--) {
+    result.add(list[i]);
+    if(result.length > number){
+      break;
+    }
+  }
+  return result;
 }
 
 int getObjectCount<T extends GardenObjectWidget>(List<Widget> list){
