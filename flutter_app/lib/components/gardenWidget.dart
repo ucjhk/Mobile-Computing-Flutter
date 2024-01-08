@@ -88,7 +88,7 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
     final statsProvider = ref.watch(statisticsProvider);
     final flowers = getObjectCount<FlowerWidget>(gardenObjects);
     if(flowers > statsProvider.statistics.mostFlowers){
-      statsProvider.setMostFlowers(getObjectCount<FlowerWidget>(gardenObjects));
+      statsProvider.setMostFlowers(flowers);
     }
 
     return saveGardenObjectsToFile(gardenObjects);
