@@ -39,6 +39,38 @@ int getObjectCount<T extends GardenObjectWidget>(List<Widget> list){
     return groupedSessions;
   }
 
+List<double> sessionsGoodPosture(List<SessionStatistic> sessions) {
+    List<double> result = [];
+    for (var entry in sessions) {
+      double value = entry.goodPosturePercentage;
+      result.add((value * 100).round().toDouble());
+    }
+    return result;
+}
+
+  List<double> sessionsAverageGoodPosture(List<SessionStatistic> sessions) {
+    var groupedSessions = groupByDate(sessions);
+    List<double> result = [];
+    for (var entry in groupedSessions.entries) {
+      double sum = entry.value.fold(0, (previousValue, element) => previousValue + element.goodPosturePercentage);
+      double average = sum / entry.value.length;
+
+      result.add((average * 100).round().toDouble());
+    }
+    return result;
+  }
+
+   List<double> summedTime(List<SessionStatistic> sessions) {
+    var groupedSessions = groupByDate(sessions);
+    List<double> result = [];
+    for (var entry in groupedSessions.entries) {
+      double sum = entry.value.fold(0, (previousValue, element) => previousValue + element.sessionTime);
+
+      result.add(sum);
+    }
+    return result;
+  }
+
 enum TimeValues{
   seconds,
   minutes,

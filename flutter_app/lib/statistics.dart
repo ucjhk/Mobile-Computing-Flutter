@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/customWidgets.dart';
 import 'package:flutter_app/utils/helperMethods.dart';
+import 'package:tuple/tuple.dart';
 
 class Statistics{
   /// All time record of being active user
@@ -72,7 +73,7 @@ class Statistics{
   }
 
   double _getSessionTime(List<SessionStatistic> list){
-    return list.fold(0.0, (previousValue, element) => previousValue + element.sessionTime) / list.length;
+    return list.fold(0.0, (previousValue, element) => previousValue + element.sessionTime);
   }
 
   double lastDaysSessionTime(int days){
@@ -84,11 +85,15 @@ class Statistics{
   }
 
   PostureChart lastDaysPostureChart(int days){
-    return PostureChart(sessions: _lastDays(days), maxEntriesToShow: days);
+    return PostureChart(sessions: sessionsAverageGoodPosture(_lastDays(days)), maxEntriesToShow: days);
+  }
+
+  PostureChart thisDaysPostureChart(){
+    return PostureChart(sessions: sessionsGoodPosture(sessions), maxEntriesToShow: 5, showNumbers: const Tuple4(false,false,false,false),);
   }
 
   TimeChart lastDaysSessionTimeChart(int days){
-    return TimeChart(sessions: _lastDays(days), maxEntriesToShow: days);
+    return TimeChart(sessions: summedTime(_lastDays(days)), maxEntriesToShow: days);
   }
 
 }
@@ -120,47 +125,29 @@ class SessionStatistic{
   }
 }
 
+
 class PostureChart extends StatelessWidget {
-  final List<SessionStatistic> sessions;
+  final List<double> sessions;
   final int maxEntriesToShow;
+  final Tuple4<bool,bool,bool,bool> showNumbers;
 
-  const PostureChart({super.key, required this.sessions, required this.maxEntriesToShow});
-
-  List<double> sessionsGoodPosture(Map<DateTime, List<SessionStatistic>> groupedSessions) {
-    List<double> result = [];
-    for (var entry in groupedSessions.entries) {
-      double sum = entry.value.fold(0, (previousValue, element) => previousValue + element.goodPosturePercentage);
-      double average = sum / entry.value.length;
-
-      result.add((average * 100).round().toDouble());
-    }
-    return result;
-  }
+  const PostureChart({super.key, required this.sessions, required this.maxEntriesToShow, this.showNumbers = const Tuple4(true,false,false,true)});
 
   @override
   Widget build(BuildContext context) {
-    return ChartWidget(maxEntriesToShow: maxEntriesToShow, values: sessionsGoodPosture(groupByDate(sessions)));
+    return ChartWidget(maxEntriesToShow: maxEntriesToShow, values: (sessions), showNumbers: showNumbers);
   }
 }
 
 class TimeChart extends StatelessWidget {
-  final List<SessionStatistic> sessions;
+  final List<double> sessions;
   final int maxEntriesToShow;
+  final Tuple4<bool, bool, bool, bool> showNumbers;
 
-  const TimeChart({super.key, required this.sessions, required this.maxEntriesToShow});
-
-  List<double> summedTime(Map<DateTime, List<SessionStatistic>> groupedSessions) {
-    List<double> result = [];
-    for (var entry in groupedSessions.entries) {
-      double sum = entry.value.fold(0, (previousValue, element) => previousValue + element.sessionTime);
-
-      result.add(sum);
-    }
-    return result;
-  }
+  const TimeChart({super.key, required this.sessions, required this.maxEntriesToShow, this.showNumbers = const Tuple4(true,false,false,true)});
 
   @override
   Widget build(BuildContext context) {
-    return ChartWidget(maxEntriesToShow: maxEntriesToShow, values: summedTime(groupByDate(sessions)));
+    return ChartWidget(maxEntriesToShow: maxEntriesToShow, values: sessions, showNumbers: showNumbers,);
   }
 }

@@ -30,7 +30,7 @@ class StopWatchWidget extends ConsumerWidget {
     } else {
       return Container(
         alignment: Alignment.center,
-        child: Text("Pause", style: Theme.of(context).textTheme.displayLarge),
+        child: Card(child: ref.watch(statisticsProvider).statistics.thisDaysPostureChart()),
       );
     }
   }

@@ -26,7 +26,7 @@ class StatisticsPage extends ConsumerWidget {
             Padding(padding: const EdgeInsets.only(top: 50.0), 
               child: Text('Statistics', style: Theme.of(context).textTheme.displayLarge),
             ),
-            CardWidget(text: 'Flower Record', value: '${statistics.mostFlowers}'),
+            CardWidget(text: 'Flower Record', value: '30'),
             const SizedBox(height: 10.0),
             CardWidget(text: 'Overall Learn Time', value: '${sessionTime.item1} ${sessionTime.item2.toString()}'),
             CardWidget(text: 'Last 7 Days Learn Time', value: '${lastSevenDaysSessionTime.item1} ${lastSevenDaysSessionTime.item2.toString()}'),

@@ -127,7 +127,7 @@ class _NumberPickerState extends State<NumberPicker> {
                     height: 23.0,
                     child: Icon(
                       Icons.add,
-                      color: _toHigh() ? disabledColor : secondaryColor ,
+                      color: _toHigh() ? disabledColor : primaryColor ,
                       size: 23.0,
                     ),
                   ),
@@ -140,7 +140,7 @@ class _NumberPickerState extends State<NumberPicker> {
                     child: Icon(
                       Icons.remove,
                       size: 23.0,
-                      color: _toLow() ? disabledColor : secondaryColor,
+                      color: _toLow() ? disabledColor : primaryColor,
                     ),
                   ),
                 ), 

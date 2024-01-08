@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/components/gardenComponents.dart';
 import 'package:flutter_app/providers/eSenseManager.dart';
 import 'package:flutter_app/providers/postureProvider.dart';
+import 'package:flutter_app/providers/statisticsProvider.dart';
 import 'package:flutter_app/providers/stopWatchProvider.dart';
 import 'package:flutter_app/utils/storingFiles.dart';
 import 'package:flutter_app/utils/constants.dart';
@@ -83,6 +84,12 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
         _=>throw Exception("Invalid type")
       });
     }); 
+
+    final statsProvider = ref.watch(statisticsProvider);
+    final flowers = getObjectCount<FlowerWidget>(gardenObjects);
+    if(flowers > statsProvider.statistics.mostFlowers){
+      statsProvider.setMostFlowers(getObjectCount<FlowerWidget>(gardenObjects));
+    }
 
     return saveGardenObjectsToFile(gardenObjects);
   }

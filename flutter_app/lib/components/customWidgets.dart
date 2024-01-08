@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/providers/settingsProvider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tuple/tuple.dart';
 
 class CardWidget extends StatelessWidget{
 
@@ -44,8 +45,9 @@ class ChartWidget extends StatelessWidget{
 
   final maxEntriesToShow;
   final List<double> values;
+  final Tuple4<bool,bool,bool,bool> showNumbers;
 
-  const ChartWidget({super.key, required this.maxEntriesToShow, required this.values});
+  const ChartWidget({super.key, required this.maxEntriesToShow, required this.values, required this.showNumbers});
 
   @override
   Widget build(BuildContext context) {
@@ -59,14 +61,16 @@ class ChartWidget extends StatelessWidget{
         LineChart(
           LineChartData(
             gridData: const FlGridData(show: true),
-            titlesData: const FlTitlesData(
+            titlesData: FlTitlesData(
               show: true,
-              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: showNumbers.item3)),
+              leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: showNumbers.item1)),
+              bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: showNumbers.item4)),
+              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: showNumbers.item2)),
             ),
             borderData: FlBorderData(
               show: true,
-              border: Border.all(color: const Color(0xff37434d), width: 1),
+              border: Border.all(color: Theme.of(context).primaryColor, width: 1),
             ),
             minX: 0,
             maxX: maxEntriesToShow.toDouble(),
@@ -77,7 +81,7 @@ class ChartWidget extends StatelessWidget{
                 spots: values.asMap().entries
                     .map((entry) => FlSpot(entry.key.toDouble(), entry.value)).toList(),
                 isCurved: true,
-                color: Colors.blue,
+                color: Theme.of(context).primaryColor,
                 barWidth: 4, // Adjust the width of the line
                 belowBarData: BarAreaData(show: false),
               ),
