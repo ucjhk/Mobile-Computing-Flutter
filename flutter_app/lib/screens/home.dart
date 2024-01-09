@@ -5,12 +5,19 @@ import 'package:flutter_app/components/gardenWidget.dart';
 import 'package:flutter_app/components/stopwatch.dart';
 import 'package:flutter_app/utils/constants.dart';
 
+///------------------------------------------------------------------------///
+/// StartPage
+/// displays the Garden, StopWatch, Settings in a Stack over each other
+///------------------------------------------------------------------------///
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+
+        //Background
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage(ImagePaths.backGroundImage),
@@ -18,16 +25,17 @@ class HomePage extends StatelessWidget {
           ),
         ),
         child: Stack(
-          //alignment: Alignment.center,
           children: [
+
+            //Garden Widget
             LayoutBuilder(builder: (context, constraints) {
               return GardenWidget(width: constraints.maxWidth.round(), height: constraints.maxHeight.round());
-            }), 
-            /* const GardenWidget(
-              width: Tuple2(-90, 350),
-              height: Tuple2(250, 500)
-              ), */
+            }),
+
+            //Stop Watch 
             const StopWatchWidget(),
+
+            //Setting Widgets
             Container(
               padding: const EdgeInsets.all(25.0),
               alignment: Alignment.topRight,

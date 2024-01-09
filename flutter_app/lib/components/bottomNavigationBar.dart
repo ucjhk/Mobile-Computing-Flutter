@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 
+///------------------------------------------------------------------------///
+/// Custom Navigationbar that returns an index when taped
+/// switch between the Start page and the Statistics page
+///------------------------------------------------------------------------///
+
 class BottomNavigation extends StatefulWidget {
   final ValueChanged<int>? onTap;
 
-  BottomNavigation(this.onTap);
+  const BottomNavigation(this.onTap);
   @override
-  _BottomNavigationState createState() => _BottomNavigationState();
+  BottomNavigationState createState() => BottomNavigationState();
 }
 
-class _BottomNavigationState extends State<BottomNavigation> {
+class BottomNavigationState extends State<BottomNavigation> {
   int _currentIndex = 0;
 
   void _onTabTapped(int index) {

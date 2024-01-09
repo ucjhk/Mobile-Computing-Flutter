@@ -6,7 +6,7 @@ part of 'eSenseManager.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$eSenseHandlerHash() => r'24e0c3a9359f88b590a6dddf459d10a1f7cc5559';
+String _$eSenseHandlerHash() => r'a46313ca78e12220ef7d3ee0258edb0ad92f15c0';
 
 /// See also [ESenseHandler].
 @ProviderFor(ESenseHandler)

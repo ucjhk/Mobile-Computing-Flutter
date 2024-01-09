@@ -1,6 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+///------------------------------------------------------------------------///
+/// Settings Provider
+/// provides scale and muted 
+///------------------------------------------------------------------------///
+
 final settingsProvider = ChangeNotifierProvider<SettingsNotifier>((ref) {
   return SettingsNotifier();
 });

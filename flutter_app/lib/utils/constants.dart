@@ -10,22 +10,22 @@ const double disposeMultiplier = 0.1;
 const double garbageMultiplier = 0.1;
 const double bigGarbageMultiplier = 0.5;
 //in seconds
-const int timeTillGarbage = 10;
-const double timeTillGarbageDisposal = timeTillGarbage / 2;
-const int timeTillBigGarbage = 30;
-const double timeTillBigGarbageDisposal = timeTillBigGarbage / 2;
-const int timeTillFlower = 5;
-const double timeTillWarning = timeTillGarbage / 2.5; 
+const int timeTillGarbage = 30;
+const double timeTillGarbageDisposal = timeTillGarbage * 1.2;
+const int timeTillBigGarbage = 150;
+const double timeTillBigGarbageDisposal = timeTillBigGarbage * 1.5;
+const int timeTillFlower = 60;
+const double timeTillWarning = timeTillGarbage / 3; 
 
 ///------------------------------------------------------------------------///
 /// Earable constants
 /// ------------------------------------------------------------------------///
 
 const String eSenseName = 'eSense-0723';
-const angelThreshold = 6;
+const angelThreshold = 4;
 const samplingRate = 10;
-const cutoff = 2;
 const String warnSoundPath = 'sounds/warn.mp3';
+const String sessionEndSoundPath = 'sounds/sessionEnd.mp3';
 
 ///------------------------------------------------------------------------///
 /// StopWatch constants

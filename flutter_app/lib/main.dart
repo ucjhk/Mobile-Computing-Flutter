@@ -10,6 +10,10 @@ import 'themes.dart';
 import 'screens/home.dart';
 import 'screens/statisticsPage.dart';
 
+///------------------------------------------------------------------------///
+/// main
+///------------------------------------------------------------------------///
+
 
 void main() {
   runApp(const ProviderScope(
@@ -41,7 +45,9 @@ class MyHomePage extends ConsumerStatefulWidget {
 
 
 class MyHomePageState extends ConsumerState<MyHomePage> {
+  //page index
   int _currentIndex = 0;
+  //List of pages
   final List<Widget> _pages = [
     const HomePage(),
     const StatisticsPage(),
@@ -55,14 +61,17 @@ class MyHomePageState extends ConsumerState<MyHomePage> {
 
   @override
   void dispose() async {
+    //disconnect from eSense
     await ref.watch(eSenseHandlerProvider.notifier).disconnect();
     super.dispose();
   }
 
   Future<void> _initialize() async {
+    //read Statistics
     await readStatisticsFromFile().then((value) {
-      ref.watch(statisticsProvider).initialize(value);
+      ref.watch(statsProvider.notifier).initialize(value);
     });
+    //connect to eSense
     ref.watch(eSenseHandlerProvider.notifier).listenToESense();
     ref.watch(eSenseHandlerProvider.notifier).connectToESense();
   }

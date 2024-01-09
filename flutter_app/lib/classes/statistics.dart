@@ -1,12 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_app/components/customWidgets.dart';
 import 'package:flutter_app/utils/helperMethods.dart';
 
+///------------------------------------------------------------------------///
+/// Statistics Class
+/// Functions to utilize and display the sessions
+///------------------------------------------------------------------------///
+
 class Statistics{
-  /// All time record of being active user
   int mostFlowers;
   DateTime lastTime;
-  /// sessions
   List<SessionStatistic> sessions;
 
   Statistics({required this.mostFlowers, required this.sessions, required this.lastTime});
@@ -17,6 +19,10 @@ class Statistics{
       'lastTime': lastTime.toIso8601String(),
       'session': sessions.map((item) => item.toJson()).toList(),
     };
+  }
+
+  copyWith({int? mostFlowers, DateTime? lastTime, List<SessionStatistic>? sessions}){
+    return Statistics(mostFlowers: mostFlowers ?? this.mostFlowers, lastTime: lastTime ?? this.lastTime, sessions: this.sessions);
   }
 
   factory Statistics.fromJson(Map<String, dynamic> json) {
@@ -35,6 +41,7 @@ class Statistics{
     mostFlowers = flowers;
   }
 
+  //get sessions from the last few days
   List<SessionStatistic> _lastDays(int days){
     List<SessionStatistic> lastDays = [];
     DateTime now = DateTime.now();
@@ -47,7 +54,7 @@ class Statistics{
   }
 
     double _getPosture(List<SessionStatistic> list){
-    return list.fold(0.0, (previousValue, element) => previousValue + (element.goodPosturePercentage * 100).round()) / list.length;
+    return (list.fold(0.0, (previousValue, element) => previousValue + (element.goodPosturePercentage * element.sessionTime* 100)) / _getSessionTime(list));
   }
 
   double lastDaysPosturePercentage(int days){
@@ -82,19 +89,65 @@ class Statistics{
     return _getSessionTime(sessions);
   }
 
-  PostureChart lastDaysPostureChart(int days){
-    return PostureChart(sessions: sessionsAverageGoodPosture(_lastDays(days)), maxEntriesToShow: days);
+  ChartWidget lastDaysPostureChart(int days){
+    return ChartWidget(values: _sessionsAverageGoodPosture(_lastDays(days)), maxEntriesToShow: days);
   }
 
-  PostureChart thisDaysPostureChart(){
-    return PostureChart(sessions: getFirstFewElementsInList(sessionsGoodPosture(sessions), 5), maxEntriesToShow: 5, showNumbers: false);
+  ChartWidget thisDaysPostureChart(){
+    var ses = getFirstFewElementsInList(_sessionsGoodPosture(sessions), 5);
+    return ChartWidget(values: ses, maxEntriesToShow: 5, showNumbers: false);
   }
 
-  PostureChart lastDaysSessionTimeChart(int days){
-    return PostureChart(sessions: summedTime(_lastDays(days)), maxEntriesToShow: days);
+  ChartWidget lastDaysSessionTimeChart(int days){
+    return ChartWidget(values: _summedTime(_lastDays(days)), maxEntriesToShow: days);
+  }
+
+  /*-------------------------------------------------------------
+    Helper methods to get the right values based on the sessions
+    for the ChartWidgets
+  ---------------------------------------------------------------*/
+
+  //get the goodPosturePercentage of each session and return in a list
+  List<double> _sessionsGoodPosture(List<SessionStatistic> list) {
+    List<double> result = [];
+    for (var entry in list) {
+      double value = entry.goodPosturePercentage;
+      result.add((value * 100).round().toDouble());
+    }
+    return result;
+  }
+
+  //get the average posturePercentage of each day of the list
+  List<double> _sessionsAverageGoodPosture(List<SessionStatistic> list) {
+    var groupedSessions = groupByDate(list);
+    List<double> result = [];
+    for (var entry in groupedSessions.entries) {
+      double sum = entry.value.fold(0, (previousValue, element) => previousValue + element.goodPosturePercentage *element.sessionTime);
+      double average = sum / (_getSessionTime(entry.value));
+
+      result.add((average * 100).round().toDouble());
+    }
+    return result;
+  }
+
+  //get the summed time of each day of the list
+  List<double> _summedTime(List<SessionStatistic> list) {
+    var groupedSessions = groupByDate(list);
+    List<double> result = [];
+    for (var entry in groupedSessions.entries) {
+      double sum = entry.value.fold(0, (previousValue, element) => previousValue + element.sessionTime);
+
+      result.add(sum);
+    }
+    return result;
   }
 
 }
+
+///------------------------------------------------------------------------///
+/// Session Class
+/// Has the important values of each session saved
+///------------------------------------------------------------------------///
 
 class SessionStatistic{
   double goodPosturePercentage;
@@ -120,19 +173,5 @@ class SessionStatistic{
       sessionTime: json['sessionTime'],
       date: DateTime.parse(json['date']),
     );
-  }
-}
-
-
-class PostureChart extends StatelessWidget {
-  final List<double> sessions;
-  final int maxEntriesToShow;
-  final bool showNumbers;
-
-  const PostureChart({super.key, required this.sessions, required this.maxEntriesToShow, this.showNumbers = true});
-
-  @override
-  Widget build(BuildContext context) {
-    return ChartWidget(maxEntriesToShow: maxEntriesToShow, values: (sessions), showNumbers: showNumbers);
   }
 }

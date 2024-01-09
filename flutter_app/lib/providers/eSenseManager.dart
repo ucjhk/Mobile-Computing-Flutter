@@ -12,6 +12,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'eSenseManager.g.dart';
 
+///------------------------------------------------------------------------///
+/// Provider for the Esense Earables 
+/// can connect, listen, disconnect and play a sound
+///------------------------------------------------------------------------///
+
 @Riverpod(keepAlive: true)
 class ESenseHandler extends _$ESenseHandler{
 
@@ -21,64 +26,60 @@ class ESenseHandler extends _$ESenseHandler{
   }
 
   Future<void> requestForPermissions() async {
-    if (!(await Permission.bluetoothScan.request().isGranted &&
-        await Permission.bluetoothConnect.request().isGranted)) {
-      print('WARNING - no permission to use Bluetooth granted. Cannot access eSense device.');
-    }
+    await Permission.bluetoothConnect.request();
+    await Permission.bluetoothScan.request();
     if (Platform.isAndroid) {
-      if (!(await Permission.locationWhenInUse.request().isGranted)) {
-        print('WARNING - no permission to access location granted. Cannot access eSense device.');
-      }
+      await Permission.locationWhenInUse.request();
     }
   }
 
-Future<void> connectToESense() async {
-
-  if(!state.connected){
-    await state.connect();
-    await Future.delayed(const Duration(seconds: 10));
-    connectToESense();
-  } 
-}
-
-
-Future<void> listenToESense() async {
-  await requestForPermissions();
-
-  state.connectionEvents.listen((event) {
-    print('CONNECTION event: $event');
-
-    if (event.type == ConnectionType.connected) {
-      _listenToESenseEvents();
-      startListenToSensorEvents();
-
-    } else if (event.type == ConnectionType.disconnected && !state.connected) {
+  //Trys so long till the eSense are connected
+  Future<void> connectToESense() async {
+    if(!state.connected){
+      await state.connect();
+      await Future.delayed(const Duration(seconds: 10));
       connectToESense();
-    }
-  });
-}
+    } 
+  }
 
-void _listenToESenseEvents() async {
-  ref.watch(postureProvider).listenToEventStream(state.eSenseEvents);
+  //Listens to the connection events and starts listening to the other events when connected
+  Future<void> listenToESense() async {
+    await requestForPermissions();
 
-  Timer(const Duration(seconds: 2),
-      () async => await state.getAccelerometerOffset());
-}
- 
-void startListenToSensorEvents() async {
-  await state.setSamplingRate(samplingRate);
-  print('startListenToSensorEvents');
-  ref.watch(postureProvider).reTryStream(state.sensorEvents);
-}
+    state.connectionEvents.listen((event) {
+      print('CONNECTION event: $event');
 
+      if (event.type == ConnectionType.connected) {
+        _listenToESenseEvents();
+        startListenToSensorEvents();
+      }
+    });
+  }
+
+  //gives the eSenseEvents to the posture provider
+  void _listenToESenseEvents() async {
+    ref.watch(postureProvider).listenToEventStream(state.eSenseEvents);
+
+    Timer(const Duration(seconds: 2),
+        () async => await state.getAccelerometerOffset());
+  }
+
+  //gives the sensor events to the posture provider
+  void startListenToSensorEvents() async {
+    await state.setSamplingRate(samplingRate);
+    ref.watch(postureProvider).reTryStream(state.sensorEvents);
+  }
+
+  //disconnect the eSense
   Future<void> disconnect() async {
     await ref.watch(postureProvider).cancelStreams();
     state.disconnect();
   }
 
-  void playASound() async {
+  //play a sound
+  void playASound(sound) async {
     if(!ref.watch(settingsProvider).muted){
-      await AudioPlayer().play(AssetSource(warnSoundPath));
+      await AudioPlayer().play(AssetSource(sound));
     }
   }
 }

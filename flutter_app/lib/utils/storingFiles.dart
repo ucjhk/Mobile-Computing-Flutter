@@ -1,11 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter_app/classes/gardenComponents.dart';
-import 'package:flutter_app/components/gardenWidget.dart';
 import 'package:flutter_app/classes/statistics.dart';
-import 'package:flutter_app/utils/constants.dart';
+import 'package:flutter_app/utils/helperMethods.dart';
 import 'package:path_provider/path_provider.dart';
 
+///------------------------------------------------------------------------///
+/// Store & Read GardenWidgets
+///------------------------------------------------------------------------///
+
+
+/*-------------------------------------------------------------
+  Helper methods to store the garden objects in there list
+  and extract them from these
+---------------------------------------------------------------*/
+
+//store the gardenWidgets in its specific list to later not lose the type
 Map<String, dynamic> gardenWidgetsToJson(List<GardenObjectWidget> gardenObjects) {
   List<FlowerWidget> flowers = [];
   List<GarbageWidget> garbage = [];
@@ -23,40 +34,32 @@ Map<String, dynamic> gardenWidgetsToJson(List<GardenObjectWidget> gardenObjects)
         break;
     }
   }
-    return {
-      'flowers': flowers.map((item) => item.toJson()).toList(),
-      'garbage': garbage.map((item) => item.toJson()).toList(),
-      'bigGarbage': bigGarabage.map((item) => item.toJson()).toList(),
-    };
+  return {
+    'flowers': flowers.map((item) => item.toJson()).toList(),
+    'garbage': garbage.map((item) => item.toJson()).toList(),
+    'bigGarbage': bigGarabage.map((item) => item.toJson()).toList(),
+  };
+}
+
+List<GardenObjectWidget> gardenWidgetFromJson(Map<String, dynamic> json){
+  List<GardenObjectWidget> combined = [];
+  combined.addAll(List<FlowerWidget>.from((json['flowers']?? []).map((item) => FlowerWidget.fromJson(item))));
+  combined.addAll(List<GarbageWidget>.from((json['garbage']?? []).map((item) => GarbageWidget.fromJson(item))));
+  combined.addAll(List<BigGarbageWidget>.from((json['bigGarbage']?? []).map((item) => BigGarbageWidget.fromJson(item))));
+
+  List<GardenObjectWidget> gardenObjects = [];
+
+  for (var object in combined) {
+    insertInRightPlace(object, gardenObjects);
   }
 
-  void insertInRightPlace(object, list){
-    int insertionIndex = 0;
-      for (int i = 0; i < list.length; i++) {
-        if((list[i]).distance < object.distance) {
-          insertionIndex++;
-        }
-        else {
-          break;
-        }
-      }
-      list.insert(insertionIndex,object);
-  }
+  return gardenObjects;
+}
 
-  List<GardenObjectWidget> gardenWidgetFromJson(Map<String, dynamic> json){
-    List<GardenObjectWidget> combined = [];
-    combined.addAll(List<FlowerWidget>.from((json['flowers']?? []).map((item) => FlowerWidget.fromJson(item))));
-    combined.addAll(List<GarbageWidget>.from((json['garbage']?? []).map((item) => GarbageWidget.fromJson(item))));
-    combined.addAll(List<BigGarbageWidget>.from((json['bigGarbage']?? []).map((item) => BigGarbageWidget.fromJson(item))));
+/*-------------------------------------------------------------
+  Save and read them from the file
+---------------------------------------------------------------*/
 
-    List<GardenObjectWidget> gardenObjects = [];
-
-    for (var object in combined) {
-      insertInRightPlace(object, gardenObjects);
-    }
-
-    return gardenObjects;
-  }
 
 Future<File> saveGardenObjectsToFile(List<GardenObjectWidget> gardenObjects) async {
   final directory = await getApplicationDocumentsDirectory();
@@ -80,6 +83,10 @@ Future<List<GardenObjectWidget>> readGardenObjectsFromFile() async {
     return [];
   }
 }
+
+///------------------------------------------------------------------------///
+/// Store & Read Statistics
+///------------------------------------------------------------------------///
 
 Future<File> saveStatisticsToFile(Statistics statistic) async {
   final directory = await getApplicationDocumentsDirectory();

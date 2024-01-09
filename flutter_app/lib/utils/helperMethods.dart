@@ -1,10 +1,13 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_app/classes/gardenComponents.dart';
 import 'package:flutter_app/classes/statistics.dart';
 import 'package:tuple/tuple.dart';
 
+///------------------------------------------------------------------------///
+/// Garden Helper Functions
+///------------------------------------------------------------------------///
+
+//gets the first garbage widget in the list
 int getFirstGarbageInList(List<Widget> list){
   for(int i = 0; i < list.length; i++){
     if(list[i] is GarbageWidget || list[i] is BigGarbageWidget){
@@ -14,18 +17,8 @@ int getFirstGarbageInList(List<Widget> list){
   return -1;
 }
 
-List<double> getFirstFewElementsInList(List<double> list, int number){
-  List<double> result = [];
-  for (var i = list.length - 1; i > 0; i--) {
-    result.add(list[i]);
-    if(result.length > number){
-      break;
-    }
-  }
-  return result;
-}
-
-int getObjectCount<T extends GardenObjectWidget>(List<Widget> list){
+//gets the number of specific objects in the list
+int getObjectCount<T extends Widget>(List<Widget> list){
   int count = 0;
   for(int i = 0; i < list.length; i++){
     if(list[i] is T){
@@ -35,52 +28,56 @@ int getObjectCount<T extends GardenObjectWidget>(List<Widget> list){
   return count;
 }
 
-  Map<DateTime, List<SessionStatistic>> groupByDate(List<SessionStatistic> sessions) {
-    Map<DateTime, List<SessionStatistic>> groupedSessions = {};
-
-    // Group sessions by date
-    for (var session in sessions) {
-      DateTime date = DateTime(session.date.year, session.date.month, session.date.day);
-      if (!groupedSessions.containsKey(date)) {
-        groupedSessions[date] = [];
+//stores in right place
+void insertInRightPlace(object, list){
+  int insertionIndex = 0;
+    for (int i = 0; i < list.length; i++) {
+      if((list[i]).distance < object.distance) {
+        insertionIndex++;
       }
-      groupedSessions[date]!.add(session);
+      else {
+        break;
+      }
     }
-
-    return groupedSessions;
-  }
-
-List<double> sessionsGoodPosture(List<SessionStatistic> sessions) {
-    List<double> result = [];
-    for (var entry in sessions) {
-      double value = entry.goodPosturePercentage;
-      result.add((value * 100).round().toDouble());
-    }
-    return result;
+    list.insert(insertionIndex,object);
 }
 
-  List<double> sessionsAverageGoodPosture(List<SessionStatistic> sessions) {
-    var groupedSessions = groupByDate(sessions);
-    List<double> result = [];
-    for (var entry in groupedSessions.entries) {
-      double sum = entry.value.fold(0, (previousValue, element) => previousValue + element.goodPosturePercentage);
-      double average = sum / entry.value.length;
+///------------------------------------------------------------------------///
+/// Statistics Helper Functions
+///------------------------------------------------------------------------///
 
-      result.add((average * 100).round().toDouble());
+//gets the first few elements in the list
+List<double> getFirstFewElementsInList(List<double> list, int number){
+  List<double> result = [];
+
+  for (var i = list.length - 1; i >= 0; i--) {
+    result.add(list[i]);
+    if(result.length >= number){
+      break;
     }
-    return result;
+  }
+  return result;
+}
+
+//group the sessions by the date 
+Map<DateTime, List<SessionStatistic>> groupByDate(List<SessionStatistic> sessions) {
+  Map<DateTime, List<SessionStatistic>> groupedSessions = {};
+
+  // Group sessions by date
+  for (var session in sessions) {
+    DateTime date = DateTime(session.date.year, session.date.month, session.date.day);
+    if (!groupedSessions.containsKey(date)) {
+      groupedSessions[date] = [];
+    }
+    groupedSessions[date]!.add(session);
   }
 
-   List<double> summedTime(List<SessionStatistic> sessions) {
-    var groupedSessions = groupByDate(sessions);
-    List<double> result = [];
-    for (var entry in groupedSessions.entries) {
-      double sum = entry.value.fold(0, (previousValue, element) => previousValue + element.sessionTime);
+  return groupedSessions;
+}
 
-      result.add(sum);
-    }
-    return result;
-  }
+///------------------------------------------------------------------------///
+/// Time Converter Functions
+///------------------------------------------------------------------------///
 
 enum TimeValues{
   seconds,
@@ -100,6 +97,7 @@ enum TimeValues{
   }
 }
 
+//convert the time to the next best if possible
 Tuple2<double,TimeValues> convertTime(double time, TimeValues currentTime){
   double convertedTime = time;
   TimeValues convertedTimeValue = currentTime;

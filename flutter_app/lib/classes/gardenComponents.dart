@@ -4,9 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/constants.dart';
 import 'package:tuple/tuple.dart';
 
+///------------------------------------------------------------------------///
+/// GardenObjects that will be put in the GardenWidget
+///------------------------------------------------------------------------///
+
 class GardenObjectWidget extends StatelessWidget {
+  //image Path
   final String imagePath;
+  //For scaling the widget based on the GardenWidget height
   final double distance;
+  //actual position on the screen
   final Tuple2<double, double> position;
 
   const GardenObjectWidget({super.key, this.imagePath ='', this.distance = 1, required this.position});

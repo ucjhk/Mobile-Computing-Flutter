@@ -1,8 +1,16 @@
+import 'package:flutter_app/classes/statistics.dart';
+import 'package:flutter_app/providers/eSenseManager.dart';
 import 'package:flutter_app/providers/postureProvider.dart';
+import 'package:flutter_app/providers/statisticsProvider.dart';
 import 'package:flutter_app/utils/constants.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'stopWatchProvider.g.dart';
+
+///------------------------------------------------------------------------///
+/// StopWatch Provider
+/// provides the StopwatchState and updates its timer every second
+///------------------------------------------------------------------------///
 
 @Riverpod(keepAlive: true)
 class StopWatch extends _$StopWatch{
@@ -12,18 +20,19 @@ class StopWatch extends _$StopWatch{
     return StopWatchState();
   }
 
-  void _updateTimer() async {
+  //calls the updateTime every second
+  void updateTimer() async {
     Future<void>.delayed(const Duration(seconds: 1), () {
       if(state.isRunning){
-        updateTimer(ref.read(postureProvider).isGoodPosture);
-        _updateTimer();
+        _updateTimer(ref.read(postureProvider).isGoodPosture);
+        updateTimer();
       }
     });
   }
 
-    void start() {
-      _updateTimer();
-      state = state.copyWith(isRunning: true);
+  void start() {
+    updateTimer();
+    state = state.copyWith(isRunning: true);
   }
 
   void setSession(int value){
@@ -42,41 +51,60 @@ class StopWatch extends _$StopWatch{
     state = state.copyWith(isRunning: false, seconds: state.sessionActive ? 0 : state.pause *60);
   }
 
-  void updateTimer(isGoodPosture){
+  // updates the seconds and sets the state based on the time
+  void _updateTimer(isGoodPosture){
+    //User is in a session
+    if(state.sessionActive){
+
+      //finished the session
+      if(state.seconds >= state.session * 60){
+        //called once if state is switched
         if(state.sessionActive){
-          if(state.seconds >= state.session * 60){
-            if(state.sessionActive){
-              print(state.pause);
-              /* ref.watch(statisticsProvider).addSession(SessionStatistic(
-                goodPosturePercentage: state.goodPostureTime / (state.session * 60),
-                pauseTime: state.pause.toDouble(),
-                sessionTime: state.session.toDouble(),
-                date: DateTime.now(),
-              )); */
-              print(state.pause);
-            }
-            state.sessionActive = false;
-            state.seconds = state.pause * 60;
-          }
-          else {
-            if(isGoodPosture){
-              state.goodPostureTime++;
-            }
-            state.seconds++;
-          }
+          //add the session to the statisticsProvider
+          ref.watch(statsProvider.notifier).addSession(SessionStatistic(
+            goodPosturePercentage: state.goodPostureTime / (state.session * 60),
+            pauseTime: state.pause.toDouble(),
+            sessionTime: state.session.toDouble(),
+            date: DateTime.now(),
+          ));
+          //notify the user that the session has ended
+          ref.watch(eSenseHandlerProvider.notifier).playASound(sessionEndSoundPath);
         }
-        else{
-          if(state.seconds <= 0){
-            state.sessionActive = true;
-            state.seconds = 0;
-          }
-          else {
-            state.seconds--;
-          }
-        }
-        state = state.copyWith();
+        state.goodPostureTime = 0;
+        state.sessionActive = false;
+        state.seconds = state.pause * 60;
       }
+
+      //not finished the session
+      else {
+        if(isGoodPosture){
+          state.goodPostureTime++;
+        }
+        state.seconds++;
+      }
+    }
+
+    //SessionPause state
+    else{
+
+      //sessionPause is over
+      if(state.seconds <= 0){
+        state.sessionActive = true;
+        state.seconds = 0;
+      }
+
+      //not over
+      else {
+        state.seconds--;
+      }
+    }
+    state = state.copyWith();
+  }
 }
+///------------------------------------------------------------------------///
+/// StopWatchState Class
+/// contains the stopwatch state, the session times, and the current times
+///------------------------------------------------------------------------///
 
 class StopWatchState{
   bool sessionActive = true;

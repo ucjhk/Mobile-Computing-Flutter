@@ -5,6 +5,11 @@ import 'package:flutter_app/themes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuple/tuple.dart';
 
+///------------------------------------------------------------------------///
+/// Consumer Widgets
+///------------------------------------------------------------------------///
+
+//Toggles Mute on and off from the settingsProvider
 class MuteButton extends ConsumerWidget{
   const MuteButton({super.key});
 
@@ -22,17 +27,7 @@ class MuteButton extends ConsumerWidget{
   }
 }
 
-/* class SliderWidget extends  {
-
-  final double minSliderValue;
-  final double maxSliderValue;
-  final int divisions;
-
-  const SliderWidget({super.key, required this.minSliderValue, required this.maxSliderValue, required this.divisions});
-  @override
-  _SLiderState createState() => _SLiderState();
-} */
-
+//Sets the Scale of the App in the settingsProvider
 class SliderWidget extends ConsumerWidget {
   final double minSliderValue;
   final double maxSliderValue;
@@ -56,6 +51,14 @@ class SliderWidget extends ConsumerWidget {
   }
 }
 
+///------------------------------------------------------------------------///
+/// NumberPicker Widget
+/// has a specific range when reaching edge disable increasing/decreasing
+/// set steps per change
+/// when pressing the decrease/increase buttons 
+/// the widget calls the onChanged method to inform the parent widget
+///------------------------------------------------------------------------///
+
 class NumberPicker extends StatefulWidget {
   final String name;
   final int initialValue;
@@ -66,10 +69,10 @@ class NumberPicker extends StatefulWidget {
   const NumberPicker({super.key, required this.name, required this.initialValue, required this.steps, required this.range, this.onChanged});
 
   @override
-  _NumberPickerState createState() => _NumberPickerState();
+  NumberPickerState createState() => NumberPickerState();
 }
 
-class _NumberPickerState extends State<NumberPicker> {
+class NumberPickerState extends State<NumberPicker> {
   late int _value;
 
   @override
@@ -104,13 +107,13 @@ class _NumberPickerState extends State<NumberPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 200,
       child: Card(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Container(
+            SizedBox(
               width: 100,
               child:Text(widget.name, style: Theme.of(context).textTheme.bodyMedium)
             ),
@@ -121,7 +124,7 @@ class _NumberPickerState extends State<NumberPicker> {
               children: [
                 GestureDetector(
                   onTap: _increment,
-                  child: Container(
+                  child: SizedBox(
                     width: 23.0,
                     height: 23.0,
                     child: Icon(
@@ -133,7 +136,7 @@ class _NumberPickerState extends State<NumberPicker> {
                 ),
                 GestureDetector(
                   onTap: _decrement,
-                  child: Container(
+                  child: SizedBox(
                     width: 23.0,
                     height: 23.0,
                     child: Icon(

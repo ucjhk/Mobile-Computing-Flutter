@@ -12,6 +12,12 @@ import 'package:flutter_app/utils/helperMethods.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuple/tuple.dart';
 
+///------------------------------------------------------------------------///
+/// Garden Widget that displays the GardenObjects
+/// and stacks them based on their distance above each other
+///------------------------------------------------------------------------///
+
+//Gets the height and width of the Garden
 class GardenWidget extends ConsumerStatefulWidget {
   final int width;
   final int height;
@@ -21,10 +27,14 @@ class GardenWidget extends ConsumerStatefulWidget {
   ConsumerState<GardenWidget> createState() => _GardenWidgetState();
 }
 
-decreaseGardenObjects(List<GardenObjectWidget> gardenObjects, DateTime lastTime){
+//Method to decrease the flower count based on the last Time the app was used
+List<GardenObjectWidget> decreaseGardenObjects(List<GardenObjectWidget> gardenObjects, DateTime lastTime){
+  //how many days passed
   int daysOver = max(0, lastTime.difference(DateTime.now()).inDays - daysUntilDispose);
+  //numbers of flowers that will be disposed
   double disposeValue = daysOver * disposeMultiplier * getObjectCount<FlowerWidget>(gardenObjects);
   int disposedFlowers = 0;
+  //dispose Flowers
   for(GardenObjectWidget object in gardenObjects){
     if(object is FlowerWidget){
       disposedFlowers++;
@@ -36,7 +46,8 @@ decreaseGardenObjects(List<GardenObjectWidget> gardenObjects, DateTime lastTime)
   }
   return gardenObjects;
 }
- 
+
+
 class _GardenWidgetState extends ConsumerState<GardenWidget> {
   List<GardenObjectWidget> gardenObjects = [];
   int _flowerTimer = 0;
@@ -44,6 +55,7 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
   int _garbageTimer = 0;
   bool warnSoundPlayed = false;
 
+  //load the gardenObjectWidgets from the file and decrease them
   @override
   void initState() {
     super.initState();
@@ -56,46 +68,48 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
     });
   } 
 
-  removeObject(int index){
+  Future<void> removeObject(int index){
     setState(() {
       gardenObjects.removeAt(index);
     });
-  }
-
-  Future<void> addObject<T extends GardenObjectWidget>() {
-    double xPos = Random().nextInt(widget.width) - (widget.width * 0.15);
-    double yPos = Random().nextInt((widget.height/2.5).round()) + (widget.height * 0.4);
-    double distance = (yPos / widget.height);
-
-    int insertionIndex = 0;
-    for (int i = 0; i < gardenObjects.length; i++) {
-      if((gardenObjects[i]).distance < distance) {
-        insertionIndex++;
-      }
-      else {
-        break;
-      }
-    }
-    setState(() {
-      gardenObjects.insert(insertionIndex, switch(T) {
-        BigGarbageWidget=>BigGarbageWidget(distance: distance,position: Tuple2(xPos, yPos)),
-        GarbageWidget =>GarbageWidget(distance: distance,position: Tuple2(xPos, yPos)),
-        FlowerWidget=>FlowerWidget(distance: distance, position: Tuple2(xPos, yPos)),
-        _=>throw Exception("Invalid type")
-      });
-    }); 
-
-    final statsProvider = ref.watch(statisticsProvider);
-    final flowers = getObjectCount<FlowerWidget>(gardenObjects);
-    if(flowers > statsProvider.statistics.mostFlowers){
-      statsProvider.setMostFlowers(flowers);
-    }
-
     return saveGardenObjectsToFile(gardenObjects);
   }
 
+  //takes the type of Object that should be added
+  Future<void> addObject<T extends GardenObjectWidget>() {
+    //Random position in the Garden
+    double xPos = Random().nextInt(widget.width) - (widget.width * 0.15);
+    //Only in the lower half of the screen
+    double yPos = Random().nextInt((widget.height/2.5).round()) + (widget.height * 0.4);
+    //calculate the distance for the size
+    double distance = (yPos / widget.height);
+
+    setState(() {
+      insertInRightPlace(switch(T) {
+        BigGarbageWidget=>BigGarbageWidget(distance: distance,position: Tuple2(xPos, yPos)),
+        GarbageWidget =>GarbageWidget(distance: distance,position: Tuple2(xPos, yPos)),
+        FlowerWidget=>FlowerWidget(distance: distance, position: Tuple2(xPos, yPos)),
+        _=>throw Exception("Invalid type")}, gardenObjects);
+    }); 
+
+    //update the mostFlowers 
+    final statistics = ref.read(statsProvider);
+    final statsNotifier = ref.read(statsProvider.notifier);
+    final flowers = getObjectCount<FlowerWidget>(gardenObjects);
+    if(flowers > (statistics.mostFlowers)){
+      statsNotifier.setMostFlowers(flowers);
+    }
+    //save the gardenObjects to the file
+    return saveGardenObjectsToFile(gardenObjects);
+  }
+
+  /*-------------------------------------------------------------
+    Add and delete Objects based on the timers
+    and change the timers based on the position
+  ---------------------------------------------------------------*/
+
   timerChecking(){
-    //Reove Garbage while good posture
+    //Remove garbage if existing and garbageremoverTimer is high enough
     int garbageIndex = getFirstGarbageInList(gardenObjects);
     if(garbageIndex != -1){
       if(_garbageRemoverTimer >= (gardenObjects[garbageIndex] is BigGarbageWidget ? timeTillBigGarbageDisposal : timeTillGarbageDisposal)){
@@ -106,6 +120,7 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
     else{
       _garbageRemoverTimer = 0;
     }
+
     //Add Flowers (Slower Growing if more Garbage)
     if(_flowerTimer >= (timeTillFlower + timeTillFlower * 
     (getObjectCount<GarbageWidget>(gardenObjects) * garbageMultiplier + 
@@ -113,13 +128,15 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
       _flowerTimer = 0;
       addObject<FlowerWidget>();
     }
-    //Warning Signal
+
+    //Warning Signal 
     if(_garbageTimer >= timeTillWarning){
       if(!warnSoundPlayed){
-        ref.watch(eSenseHandlerProvider.notifier).playASound();
+        ref.watch(eSenseHandlerProvider.notifier).playASound(warnSoundPath);
         warnSoundPlayed = true;
       }
     }
+
     //Add Garbage if bad posture for too long
     if(_garbageTimer >= timeTillBigGarbage){
       _garbageTimer = 0;
@@ -127,6 +144,7 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
     }
   }
   
+  //Change Timers based on posture
   changeTimers(bool isGoodPosture){
     if(isGoodPosture){
       setState(() {
@@ -147,6 +165,7 @@ class _GardenWidgetState extends ConsumerState<GardenWidget> {
     }
   }
 
+  
   @override
   Widget build(BuildContext context) {
     final posture = ref.read(postureProvider);
